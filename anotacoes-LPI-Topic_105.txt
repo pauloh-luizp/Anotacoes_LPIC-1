@@ -1,0 +1,272 @@
+TOPICO 105: SHELLS E SHELL SCRIPTING===================================
+=======================================================================
+145. 105.1 Customização e Uso do Ambiente Shell========================
+== Variáveis, function, source, lists==================================
+
+Podemos criar uma lista fazendo:
+Ex:
+	lista={valor1 valor2 valor3 valor4}
+	echo ${lista[2]}
+
+Usamos o comando 'source' faz com que o comando seguinte ou script
+  seguinte seja executado no bash atual. Para scripts, podemos usaro o
+  ". " antes do script
+  Ex:
+    '. Script2.sh'
+
+O comando 'alias' permite criar um alias para qualquer comando. Quando
+  usado sem argumento exibe os alias já criado
+  Ex:
+    'alias dt="date +%H:%M"'
+
+O comando 'function' permite definir uma função contendo um ou vários
+  comandos e chama-la posteriormente no terminal.
+  Podemos fazer algo semelhante, porém usado '<nome-da-funcao> () { }'
+Ex:
+  'function funcao1 {
+> date;
+> uptime;
+> uname -a;
+> echo "Fim da funcao";
+> }'
+
+Para ver as funções já definidas, damos o comando 'set'
+
+O comando 'chsh' pemite mudar o shell a ser utilizado, informamos
+  o caminho para do shell "/bin/bash"
+
+146. 105.1 Customização e Uso do Ambiente Shell========================
+== Arquivos de configuração============================================
+
+Os arquivos /etc/profile e /etc/bash.bashrc são validos para todos os 
+  usuários. O /etc/profile é referente ao login do usuário no sistema. 
+  O /etc/bash.bashrc é referente a cada novo bash aberto pelo usuário.
+
+Os arquivos referentes a um usuário especifico ficam no diretorio /home
+  e são os arquivos: ".bash_profile", ".bash_login" e ".profile" são 
+  excecutados nesta ordem, se o primeiro existir não será executado o
+  segundo. O ".profile" é referente a cada novo login do usuário no 
+  sistema. O ".bashrc" é referente a cada novo bash aberto pelo usuario
+
+O arquivo ".bash_logout" define o que será feito a cada logout do bash
+
+O arquivo ".input_rc" ou /etc/inputrc permite definir comandos no 
+  terminal, como comandos, definição de comandos de edição de texto,
+  pressionamento de teclas
+
+O diretório /etc/skel é responsável por definir os arquivo e diretorio
+  base ao criarmos um novo usuário no sistema. Todos os arquivos e 
+  diretorios ali presentes serão criados no /home para o novo usuário
+
+
+150. 105.2 Customização e Criação de Scripts Simples===================
+== Introdução sobre Scripts============================================
+
+O script é um arquivo texto com as intruções que queremos executar
+
+O comando 'exec' também pode ser usado para executar um script, porém
+  ele fecha o bash atual após o termino da execução
+
+O She-bang define qual será o interpretador/linguagem a ser utilizada
+  ao executar um script
+Ex:
+  #!/bin/bash
+
+
+151. 105.2 Customização e Uso do Ambiente Shell========================
+== Uso de parâmetros e Argumentos======================================
+
+Os argumento e parâmetros são passados depois do nome do script
+Ex:
+  ./PrimeiroScript.sh 10 20 30
+  Dentro do script:
+    $0 - nome do script
+    $1 a $9 - os parâmetros recebidos
+    $# - numero de parâmetro recebido pelo script
+
+Usamos o comando 'read' para ler uma entrada do usuário
+Ex:
+  'read <VARIAVEL>'
+
+Podemos atribuir um comando à uma variável usando a crase "`" ou "$()"
+Ex:
+  VAR1=`ls -la`
+  VAR2=$(cd ~)
+
+152. 105.2 Customização e Uso do Ambiente Shell========================
+== if e case===========================================================
+
+#######
+Instrução 'if':
+Ex:
+  if <comando-condicao>
+  then
+    comando 1
+  elif <comando-condicao>
+  then
+    comando 2
+  else
+    comando 3
+  fi
+
+#O if verifica o codigo de retorno no comando, se 0 ele considera como 
+  verdadeiro
+
+#######
+O comando 'test':
+
+#O comando test é usado para criar uma condição, com as opções para 
+  testar valores numericos:
+  -eq   igual(equal)
+  -ne   diferente(not equal)
+  -gt   maior que(greater than)
+  -ge   maior ou igual que(greater equal)
+  -lt   menor que(lower than)
+  -le   menor ou igual que(lower equal)
+
+#testado strings:
+  = uma string igual a outra
+  != uma string diferente da outra
+  -n string não nula
+  -z string nula
+
+#testando arquivos:
+  -f é um arquivo
+  -d é um diretorio
+  -r tem permissao de leitura
+  -w tem permissao de escrita
+  -x tem permissao de execucao
+  -s possui tamanho maior que zero
+
+#logica:
+  ! "!" inverte, um NOT
+  -a AND
+  -o OR
+
+  !!!! o AND tem preferencia sobre o OR !!!!
+
+#exemplo:
+  test -f /tmp/test
+  [ 50 -gt 100 ]
+  [ -f /tmp/test ]
+  [ "$VAR1" -gt 10 ]
+  [ "$VAR7" ] Testa se a variável é nula
+
+
+#######
+Instrução 'case':
+
+case $var in
+  padrao1)
+    comandos
+    ;;
+  padrao2)
+    comandos
+    ;;
+  *)
+    comandos
+    ;;
+esac
+
+
+154. 105.2 Customização e Uso do Ambiente Shell========================
+== for, while e until==================================================
+
+#######
+Instrução 'for':
+
+for $VAR1 in $(seq 1 10) !!!! {1 10} !!!! {1..50..5} !!!! $(seq 1 5 50)
+do
+  comando1
+  comando2
+  ...
+done
+
+for arquivo in alunos*
+do
+  echo "O aquivo atual é $arquivo"
+done
+
+for ((i=5; i<=20; i++))
+do
+  echo "O número é $i"
+done
+
+
+for i in $(cat arquivo.txt) !!!! considera cada campo separado por ' \t\n'
+do                          !!!! chamado de IFS (inter fild separator)
+  echo "O valor atual é $i
+done
+
+# Podemos alterar o separador de campos fazendo:
+
+OLDIFS=$IFS
+
+IFS=:
+
+!!! depois voltamos com o seu valor anterior !!!!
+
+IFS=$OLSIFS
+
+
+#######
+Instrução 'while':
+
+# Executa enquanto algo for veradeiro
+
+while <comando-condição>
+do
+  comando1
+  comando2
+  ...
+done
+
+while [ $(ps axu | wc -l) -lt 300 ]
+do
+  echo "Tudo Ok"
+  sleep 30
+done
+
+#######
+Instrução 'until':
+
+# Executa até que alguma coisa seja verdadeira
+
+until <comando-condição>
+do
+  comando1
+  comando2
+  ...
+done
+
+until ls /var/lock/processo.lock > /dev/null
+do
+  echo "Aguardado Processo..."
+  sleep 30
+done
+
+
+155. 105.2 Customização e Uso do Ambiente Shell========================
+== Comandos Sequenciais================================================
+
+O ";" permite a execução de multiplos comandos de forma simples como:
+Ex:
+  'ls ; echo linux; pwd'
+
+O "&&" permite executar multiplos comandos mas somente se o anterior 
+  tiver sucesso:
+Ex:
+  'ls alundks.txt && ls && pwd'
+
+O "||" executa o segundo comando somente se o primeiro der erro:
+Ex:
+  'ls kdk.txt || ls'
+
+Colocar o comando entre "(" ")" permite executar os comando sem que saia 
+  do diretorio atual:
+Ex:
+  '( cd .. ; ls -l )'
+
+Para colocar multiplos comandos quando usamos || && ou ; temos que usar {}:
+Ex:
+  'ls /home/paulo || {echo "algo" ; exit 1; }'

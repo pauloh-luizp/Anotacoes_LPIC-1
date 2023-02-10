@@ -1,0 +1,772 @@
+TOPICO 103: COMANDOS GNU E UNIX========================================
+=======================================================================
+12. 103.1 Trabalhando na linha de comando==============================
+== shell, bash, echo, type, PATH=======================================
+
+O comando 'echo' imprime na tela o conteúdo que foi digitado em seguida
+
+Comando internos são aqueles que fazem parte do Shell, os externo são 
+aqueles que são instalados posteriormente. O comando 'type' permite
+ver se o comando é interno ou não. Quando o programa é interno aparece
+como: "'comando' is a shell builtin", 
+as saídas como: "'comando' is hashed 'caminho/do/comando'" 
+ou "'comando' is 'caminho/do/comando'" significa que ele é exteno.
+O bash sabe da localidade do comando atravez da variável de ambiente
+$PATH, ele buscará em cada um desses diretórios presentes na variável
+
+O comando 'pwd' exibe o diretório atual em que estamos
+O comando 'cd' muda de diretório
+O comando 'ls' lista o conteúdo de arquivos do diretório
+
+Um caminho absoluto é aquele que inclui desde o diretório '/'
+Um caminho relativo é aquele que não inclui o caminho completo inici_
+ando pelo '/'.
+
+13. 103.1 Trabalhando na linha de comando==============================
+== Variaveis de ambiente===============================================
+
+VARIAVEL=valor
+echo $VARIAVEL
+
+Para que a variável esteja visivel é necessário exporta-la, para isso:
+export VARIAVEL. Podemo exportar a variável já na criação
+export VARIAVEL=valor
+
+O comando 'set' exibe todas as variáveis que foram declaradas automati_
+camente ou manualmente, que foram ou não exportadas.
+O comando 'env' exibe somente as variáveis que são globais. O env pode
+modificar a variável durante um execução especifica ex:
+
+env TESTE=Windows ./Script_Variavel.sh
+
+Para remover a variável usamos o 'uset'
+
+########
+Variáveis pré definidas:
+HISTFILE - Variável contém o caminho do arquivo histórico de comandos
+HISTFILESIZE - Tamanho máximo do arquivo
+HISTSIZE - A quantidade máxima de linhas
+HOME - Mostra o home do usuário local
+LOGNAME e USER - Nome do usuário atual
+PWD - Variável que mostra o diretório atual
+TERM - Mostra o terminal que fezemos login
+DISPLAY - Indica às aplicações gráfica onde as janelas deverão ser 
+exibidas
+PATH - Diretório em que o Linux irá procurar por arquivos executaveis
+PS1 - Aparencia do prompt do shell
+
+########
+Variáveis definidas dinamicamente pelo Shell, são identificadas com
+um $ no começo.
+$$ - PID do bash atual
+$! - Mostra o PID do ultimo processo executado em background
+$? - Mostra o exit code do ultimo processo executado
+
+'~' retorna o home do usuário
+
+15. 103.1 Trabalhando na linha de comando==============================
+== Comando sequenciais, history, man===================================
+
+Usar o ';' permite executar comandos sequencialmente
+Usar o '&&' permite executar comandos sequencialmente, o comando se_
+guinte requer que o anterior tenha sucesso
+Usar o '||' permite executar comandos sequencialmente, somente se
+o anterior der erro
+
+#######
+History
+
+'history' mostra os utlimos comando executados
+'!!' repite o ultimo comando digitado
+'!<numero do comando na lista do history>' o comando com aquele numero
+'!<string>' executa o utlimo comando com aquele inicio de string
+'history -c' limpa o arquivo de histórico
+
+CTRL + R - procura por um comando no histórico de comandos
+
+Quando o comando é inteno ele não tem o Manual, para eles temos que
+consultar o manual do bash
+'info' é semelhante ao 'man'
+'man -k <termo pesquisado>' exibe todos os comandos que tenham o 
+termo pesquisado
+
+'whatis <nome do comando>' exibe a descrição do comando
+'apropos <termo pesquisado>' semelhante ao 'man -k'
+
+16. 103.1 Trabalhando na linha de comando==============================
+== uname, alias========================================================
+
+'uname -a' imprime as informações do sistema
+'alias' permite criar um atalho, apelido para algum comando
+Para criar um alias fazemos:
+  alias lt='ls /tmp'
+
+17. 103.1 Trabalhando na linha de comando==============================
+== which===============================================================
+O comando 'which' serve para procurar arquivos que estão dentro do PATH
+Ex:
+which echo
+
+18. 103.1 Trabalhando na linha de comando==============================
+== Quoting=============================================================
+
+A "" protege todos os caracteres especiais, exceto: $ ` \
+A '' protege todos os caracteres
+A \  protege somente o caracter logo a seguir
+
+20. 103.2 Aplicando Filtros a Textos e Arquivos========================
+== cat, tac, less, head, tail, sort, wc================================
+
+O comando 'cat' lê um aquivo de texto
+  -n enumera as linhas
+  -b enumera apenas a linhas não brancas
+  -s transforma mais de uma linha em branco e apenas uma
+  -a exibe os caracteres especiais, '$' para o final de linha
+      '^I' para o TAB
+
+O comando 'tac' imprime o arquivo de trás para frente
+O comando 'head' mostra o cabeçalho do arquivo
+O comando 'tail' mostra as ultimas linhas do arquivo
+  -f mostra o fluxo do final do arquivo, se algo for escrito ele 
+    exibirá 
+
+O comando 'less' exibe o arquivo de forma paginada
+  o '/' permite procurar palavras
+  CTRL + G exibe o status do arquivo
+
+O comando 'wc' lê a quantidade de linhas, palavras e tamanho em bytes
+  -l para quantidade de linhas
+  -w para quantidade de palavras
+  -c para quantidade de Bytes
+  -m para quantidade de caracteres
+
+21. 103.2 Aplicando Filtros a Textos e Arquivos========================
+== uniq, od, paste, split==============================================
+
+O comando 'nl' semelhante ao 'cat -b'
+O comando 'sort' serve para ordenar um arquivo
+O comando 'uniq' mostra os itens unicos de um aquivo, mas é necessario
+que o arquivo esteja ordenado
+  -d exibe os itens duplicados
+  -c faz a contagem
+
+O comando 'od' exibe o conteúdo do texto em formato octal
+  -t para mudar o formato
+
+O comando 'join' combina dois aquivos através de um indice
+por exemplo o numero da linha
+  -j troca o indice
+
+O comando 'paste' combina dois arquivos linha a linha
+O comando 'split' divide um arquivo em vários outros
+  -l20 a cada tantas linhas ele divide o arquivo
+  -b100 a cada tanto bytes ele divide o arquivo
+  split -l20 arquivo.txt novo_arquvio_ para alterar o nome de saida
+
+22. 103.2 Aplicando Filtros a Textos e Arquivos========================
+== tr, cut, sed, fmt, expand, unexpand, pr=============================
+
+O comando 'tr' faz a subistituição de texto, requer o uso do pipe ou 
+pelo redirecionamento da entrada
+  -d para deletar
+  -s remove partes repetidas
+Quebra de linha:
+  LF = Line Feed = Nova linha
+  \n
+
+  CR = Carriage Return
+  \r
+  
+  Windows: CR-LF \r\n ^M
+  Unix/Linux: LF \n $
+
+Converter CR-LF para LF: tr -d "\r" < ArquivoWindows,txt > NovoArquivo
+
+O comando 'cut' recorta parte de um texto, podendo usar delimitadores
+  -c para caracteres
+  -f para campos
+  -d para trocar o delimitador
+
+O comando 'sed' procura um conteudo e substitui ou deleta um conteudo
+colocando entre apostofro
+Ex: sed 's/Silva/Souza/g' arquivo.txt !!! para uma unica ocorrencia na
+linha. Com o uso de /g torna global
+
+Delentando linhas:
+Ex: sed '3,5 d' alunos.txt
+
+Deletando linhas que contenha certa palavra
+Ex: sed '/Claudia/d' alunos.txt
+
+O comando 'fmt' permite formatar um aquivo especificando a altura e
+largura
+Ex:
+	'fmt -w 72 <nome-do-arquivo>'
+	
+O comando 'expand' substitui as tabulações por espaço em branco
+
+O comando 'unexpand' substitui os espaço em branco por tabulações
+
+O comando 'pr' coloca o arquivo em páginas ou colunas para impressão
+
+
+
+24. 103.2 Aplicando Filtros a Textos e Arquivos========================
+== xzcat, bzcat, zcat==================================================
+
+Podemos criar arquivos usando os comandos 'xz -k';'bzip2 -k';'gzip -k'
+Podemos ler sem descompactar o arquivo de texto:
+
+'xzcat' para arquivos compactados com o algoritmo XZ
+'bzcat' para arquivos compactados com o algoritmo BZ
+'zcat'  para arquivos compactados com o algoritmo GZIP
+
+25. 103.2 Aplicando Filtros a Textos e Arquivos========================
+== checksum============================================================
+
+'md5sum'
+'sha1sum'
+'sha256sum'
+'sha512sum'
+
+Comparando duas hashs:
+sha256sum -c <Arquivo com os SHA>
+  -c compara todos os arquivos do diretorio com os arquivos do SHA
+
+
+27. 103.3 Gerenciamento Basico de Arquivos=============================
+== cd, ls, file========================================================
+
+'cd -' volta para o diretório que estavamos antes
+'ls'
+  -a mostra aquivos ocultos
+  -l mostra uma lista detalhada dos arquivos
+  -h mostra o tamanho em kilobytes, megabytes, gigabyte
+  -R entra dentro de cada diretório e exibe os resultados
+
+##Usando regex
+* mostra qualquer ocorrencia depois
+? substitui um caracter
+[123] lista de caracteres que podem aparecer
+[!123] tudo que não tenha 123
+[1-5] de um a cinco
+{10,20,30} especifica uma sequencia de caracteres
+
+drwxr-xr-x 21 paulo paulo 4096 Jan 20 19:34 .vimrc
+1° permissoes e se é um aquivo, diretorio ou link
+2° hardlinks que aponta para este local
+3° nome do usuário que é dono do arquivo ou diretorio
+4° nome do grupo que é dono do arquivo ou diretorio
+5° tamanho do arquivo em bytes
+6° data e hora da ultima alteração
+7° nome do arquivo
+
+O comando 'file' analisa o tipo de arquivo
+file arquivo.txt
+
+
+27. 103.3 Gerenciamento Basico de Arquivos=============================
+== touch, cp, mv=======================================================
+
+'cp' -opções <origem> <destino>
+  -i pergunta antes de um arquivo ser sobreescrito
+  -r copia o diretório e todo o seu conteúdo
+  -p mantem as caracteristicas do arquivo, data, dono e grupo
+
+'mv' recorta o arquivo, movendo para outro diretório
+'touch' criar um arquivo em branco, mudar a hora do acesso do arquivo
+  -a altera a data do ultimo acesso
+  -m data e hora da ultima modificação
+  -t para escolher a data e hora como 202212051159 <nome do arquivo>
+
+27. 103.3 Gerenciamento Basico de Arquivos=============================
+== rm, mkdir, rmdir, find==============================================
+
+'rm' remove os arquivos
+  -r remove diretórios, subdiretórios e o seu conteúdo
+
+'rmdir' remove diretórios vazios
+  -p remove toda a árvore, desde que todos os diretorios esteja vazios
+'mkdir' cria diretórios
+  -p ou --parents para criar toda uma árvore de diretórios
+
+'find' procura arquivos de diretórios
+  find <local de busca> -opçoes <nome>
+  -name para buscar um arquivo
+  -user busca pelo usuário
+  -ctime busca pela data de modificação do arquivo
+
+
+27. 103.3 Gerenciamento Basico de Arquivos=============================
+== tar, gzip, bzip2, xz================================================
+
+'tar' comprime arquivos ou agrupa arquivos
+  c criar uma arquivo de backup
+  x extrair um arquivo
+  t listar quais arquivos existem no arquivo de backup
+  f define o nome do arquivo, ultimo parâmetro a ser utilizado
+  p preseva as permissoes
+  v verbose
+  t lista o conteudo dos arquivos
+  z agrupa e comprime usando o gzip .tgz
+  j agrupa e comprime usando o bzip2 .tbz
+  J agrupa e comprime usando o xz .txz
+Ex:
+  tar cpvf backup.tar novo* 
+  Gera um arquivo que contem todos os outros dentro
+
+'gzip' compacta os arquivos .tar
+  -k mantem o arquivo original e cria o compactado
+'gunzip' para descompactar
+Ex:
+  gzip backup.tar
+
+'bzip2' compacta arquivos
+'buzip2' descompacta
+
+'xz' compacta
+'unxz' ou 'xz -d' descompacta
+
+'file' permite verificar qual o algoritmo utilizado na compressão
+
+
+27. 103.3 Gerenciamento Basico de Arquivos=============================
+== tar, gzip, bzip2, xz================================================
+
+'cpio' agrupa uma lista de arquivos utilizando o find
+  -o cria o arquivo
+  -i desagrupa
+  -d cria as subpastas necessárias
+Compactar Ex:
+  find ./ -name "novo" | cpio -o > backup.cpio
+  find ./ -name "novo" | cpio -o | gzip > backup.cpio.gz
+Descompactar Ex:
+  cpio -i < backup.cpio
+  gunzip -c backup.cpio.gz | cpio -i
+
+'dd' usado para copiar uma partição inteira de uma partição para outra
+para um arquivo ou de um arquivo para uma partição
+Ex:
+  dd if=/dev/sr0 of=imagem.img
+  if imput file, of output file
+ 
+
+33. 103.4 Fluxo, Pipes e Redirecionamento=============================
+== Redir entrada/saida/erro | (pipe)==================================
+
+STDIN (0) ---> PROGRAM ---> STDOUT (1)
+                  |
+                  ---> STDERR (2)
+
+STDIN (0) Entrada padrão: teclado
+STDOUT (1) Saída padrão: tela
+STDERR (2) Saída padrão: tela
+
+#######
+Redirecionar a saída padrão usamos o '>' ou o '>>'
+'>'  sobreescreve o arquivo de saída
+'>>' append no final do arquivo
+Podemos usar 1> e 1>> ou 2> e 2>>
+Podemos redirecionar a saida de erro para o mesmo arquivo que a saida
+padrao usando '2>&1'
+Ex:
+  ls -l {Aula,AULA}3 > saida-ls.out 2> saida-ls-erro.out
+  ls -l {Aula,AULA]3 > saida-ls.out 2>&1
+
+Erro comum:
+  sort alunos3.txt > alunos3.txt
+  Errado pois o shell criará o alunos3.txt, ou seja, ao fazer o sort
+  o arquivo estará em branco
+Correção:
+  sort alunos3.txt > alunos-temp
+  mv alunos-temp alunos.txt
+
+#######
+Redirecionar a entrada usamos '<' ou o pipe '|'
+Ex:
+  tr 'a-z' 'A-Z' < alunos.txt
+  mail -s "Assunto" paulo < alunos.txt
+
+O '<<' é usado quando queremos inserir um conteudo interativamente,
+até que se informe o seu fim.
+Ex:
+  tr a-z A-Z << final   !!! o "final" é a string delimitadora
+> Curso preparatorio
+> lpic-1
+> final
+CURSO PREPARATORIO PARA CERTIFICADO
+LPIC-1
+
+O '<<<' "here string" Ele redireciona a string digitada como se fosse
+um conteúdo de um arquivo texto
+Ex:
+  tr a-z A-Z <<< teste.txt
+  TEST.TXT
+
+34. 103.4 Fluxo, Pipes e Redirecionamento=============================
+== tee, xargs, subcomandos============================================
+
+O comando 'tee' permite escrever na tela ao mesmo tempo que joga a 
+saida para um arquivo
+Ex:
+  ls -l /tmp | tee novo-arquivo.log
+
+O comando 'xargs' executa o comando ou programa e passa como argumento
+para esse comando o que foi recebido como entrada padrão. Ele resolve
+o problema de pegar a saída padrão de um programa e usá-la como argu_
+mentos ou parâmetro para um comando ou programa.
+Ex:
+  find /home -name "Aula*" | xargs rm
+
+#######
+Subcomandos
+Para utilizar subcomandos no linux podemos usar a crase '`' ou o $( )
+Um comando é executado dentro do outro, o primeiro comando utiliza-o 
+como entrada
+Ex:
+  echo "A versão do kernel é: " `uname -r`
+  echo "A versão do kernel é: " $(uname -r)
+
+
+37. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== processos. ps, pstree, pgrep=======================================
+
+PID = Process ID
+PPID = Parent Process ID
+
+init é o primeiro processo iniciado com ID 1
+
+O comando 'ps' vê os processos em execução no Linux
+O ps incorpora os ps do UNIX, BSD e GNU
+  UNIX options utiliza o '-'
+  BSD options não utiliza o '-'
+  GNU options utiliza o '--'
+
+'ps' sozinho mostra os processo que estão em execução no usuario atual
+nesse terminal
+  -a mostra os processos de todos os usuários
+  -x mostra os processo que não foram iniciados diretamente no terminal
+  atual
+  -u mostra os usuário e os processos
+  -f mostra em formato de arvore
+  -C filtra pelo nome do processo
+
+RSS inclui somente a memoria fisica
+VSZ inclui a memoria fisica e virtual
+
+O comando 'pstree' mostra os processos em forma de uma árvore
+  -p mostra o ID do processo
+
+O comando 'pgrep' mostra os IDs dos processo filtrando pelo nome
+  -u para especificar o usuário
+
+
+38. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== top================================================================
+
+O comando 'top' permite monitorar os processos da máquina
+Load Average mostra a média do processos em execução ou que estão 
+aguardando a execução
+  0,12 , 0,06 , 0,01
+1° média do utlimo min
+2° média dos ultimos 5 min
+3° média dos ultimos 15 min
+
+Digitando:
+  M ordena pelos que estão consumindo mais memória
+  P ordena pelo maior consumo de CPU
+  u ordena pelo usuario
+  r prioridade de execucao
+  n quantidade de processos exibidos
+  k mata o processo
+  ? ou h mostra as opçoes
+
+Ex:
+  'top -b' exibe o top na tela sem ser iterativo
+  -d3 configura o tempo de atualização
+  -n3 quantidade de atualizações
+
+
+39. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== kill, killall, pkill===============================================
+
+kill, killall e pkill são utilizados para enviar sinais a um processo
+
+#######
+'kill'
+  -l lista os sinais que podem ser enviados
+
+1) SIGHUP terminar, ou reiniciar o processo ou fazer que ele releia as
+suas configurações
+2) SIGINT interrompe o processo, usado no CTRL + C
+3) SIGQUIT fecha o processo
+9) SIGKILL matar abrptamente, não pode ser ingonorado pelo programa
+15) SIGTERM solicita ao processo que finalize, fazendo que ele termine
+as sessoes ativas e morre
+
+Ex:
+  kill <ID do processo> !!! envia o sinal SIGTERM de ID 15
+  kill -s SIGKILL <ID do processo> !!! -s para especificar o sinal
+  kill -9 <ID do processo>
+
+#######
+'killall' mata o processo com base no nome
+Ex:
+  killall firefox
+
+#######
+'pkill' encontra o processo pelo nome o mata
+Ex:
+  pkill -9 firefox -u paulo
+
+
+40. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== uptime, free, screen===============================================
+
+O comando 'uptime' exibe o tempo de ativade da máquina
+O comando 'free' exibe a quantidade de memória e de swap
+  -m para MegaBytes
+  -g para GigaBytes
+
+!!! used significa que ele assumiu a memória ele vai utiliza-la quando
+precisar, e não que ela esteja sempre em uso
+
+O comando 'screen' ferramenta para gerencia e trabalhar em varias abas
+tipo um tmux
+CTRL + a c cria uma nova aba
+CTRL + a n alterna entre abas
+CTRL + a d sai do screen, mas não o encerra
+CTRL + a r volta para o screen
+
+
+41. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== jobs, bg, fg, nohup================================================
+
+Processo em foregroud deixa o terminal preso
+Para colocar o processo em backgroup usamos o '&', será exibido o ID
+do job e ID do processo
+
+O comando 'jobs' exibe as tarefas que estão em background
+CTRL + Z coloca o processo em stopped
+
+O comando 'bg' coloca o ultimo job que tem o + em backgroud
+O comando 'fg' coloca o ultimo job que tem o + em foreground
+  aceita como parâmetro o ID do job
+
+O comando 'nohup' impede que o processo não aceite o sinal de HUP
+Ex: 
+  nohup firefox &
+
+
+42. 103.5 Criar, Monitorar e Encerrar Processos=======================
+== watch, tmux========================================================
+
+O comando 'watch' executa um comando periodicamente a cada 2 segundos
+por padrão, exibindo na tela a saida do comando
+  -n muda o tempo de atualização
+Ex:
+  watch "ps axu | grep firefox"
+  
+O comando 'tmux' permite ter varios terminais em um só
+CTRL + B c cria uma nova janela
+CTRL + B , renomeia a janela
+CTRL + B p vai para a janela anterior
+CTRL + B n vai para a proxima janela
+CTRL + B l vai para ultima janela
+CTRL + B <numero da janela> vai para janela especificada
+CTRL + B w lista as janela que temos abertas
+CTRL + B % cria um painel na vertical
+CTRL + B " cria um painel horizontal
+CTRL + B d sai do temporarimente do tmux
+CTRL + B & fecha a janela
+
+'tmux attach -t <nome da sessão>' permite voltar para sessao
+'tmux new -s <nome da sessão>' cria uma nova conexão
+'tmux kill-session -t <nome da sessão>
+
+
+44. 103.6 Modificar a Prioridade de Execução dos processos============
+== nice, renice=======================================================
+
+Utilizando o comando 'top' temos as colunas PR e NI
+  PR - Prioridade
+  NI - Nice, propriedade que permite o usuário modifique a prioridade
+
+O comando 'nice' define o nice do comando assim que o iniciamos
+O comando 'renice' altera o nice do comando que já está em execução
+  -n ou --adjustment=-10
+Ex:
+  nice --15 firefox &
+  renice -7 <PID> !!! valor 7 negativo
+  renice 7 <PID> !!! valor 7 positivo
+  renice -n 5 -u paulo <PID> !!! para o usuario paulo
+  renice -n 5 -g paulo <PID> !!! para o grupo paulo
+
+Os valores vão de -20 a 19, o mais negativo tem a maior prioride
+Apenas o root pode aumentar a prioridade dos processos
+O valor padrão é 0
+Se não especificado a priridade, o padrão será 10
+
+
+46. 103.7 Pesquisar Arquivos de Texto com Expressoes regulares========
+== grep, into regex===================================================
+
+O comando 'grep' procura em um aquivo de texto ou em uma saida de um
+comando 
+  -c conta as ocoreencias no text
+  -i ignorar o case sensitive
+  -r procura também nos subdiretórios
+  -E -e expande as expressoes regulares
+  -v mostra todas a linhas que não contem o termo pesquisado
+
+Temos o 'egrep' é o grep com suporte com  expressões regulares
+Temos o 'fgrep' não suporta expressoes regulares
+
+47. 103.7 Pesquisar Arquivos de Texto com Expressoes regulares========
+== regex, sed=========================================================
+
+Maiores detalhes consultando o:
+  man 7 regex
+
+Listas:
+  egrep "b[aeiu]g" texto.txt
+
+"^Linux" indica o começo da linha
+"Linux$" indica o final da linha
+"^$" exibe as linha em branco
+-v "^$" exibe tudo, exceto as linhas em branco
+"|" expressão logica OU
+"*" requer que o caracter anterior apareça nenhuma, uma ou mais vezes
+"+" requer que o caracter anterior apareça ao menos uma ou mais vezes
+"?" requer que o caracter anterior apareça nenhuma ou apenas uma vez
+"." significa que a palavra tenha qualquer um caracter
+".*" exige que o caracter antes do ponto apareça uma ou mais vezes e o
+restante pode ser qualquer caractere
+{1,3} o caracter anterior pode aparecer de 1 a 3 vezes
+
+#######
+O comando 'sed' permite substituir um valor por outro ou deletar uma
+linha que siga algum padrão.
+Ex:
+  sed '/^#/d' texto !!! tudo que começa com #
+  usado a expressão regular na busca
+
+Proteger um caracter usando a '\'
+
+
+48. 103.7 Pesquisar Arquivos de Texto com Expressoes regulares========
+== expressao regular basica e extendidas==============================
+
+O grep tradicional trouxe as expressões do UNIX usando o BRE, os meta
+caracteres precisam ser protegidos pelo '\'. O grep não compreende
+  grep 'ba{1,3}h' novo-texto.txt !!! de 1 a 3 caracteres 'a'
+  é necessário o uso de '\'
+  grep 'ba\{1,3\}h' novo-texto.txt
+
+O egrep é um grep melhorado e entende {1,3} se colocarmos a '\' 
+fará que ele busque pelo literal '{1,3}'
+
+#######
+Tipos de meta caracteres:
+  Character Set são aqueles que definem o grupo:
+    . [] [^]
+  Quantifier são aqueles que definem a quantidade de vezes que aprecem
+  o caracter:
+    ? * + {}
+  Achor:
+    ^ $ \b
+    \b indica o inicio e final de uma palavra. É considerado uma
+    palavra: letras, números e sublinhados
+    Ex:
+      egrep '\bLinux\b' texto.txt
+    
+    
+50. 103.8 Edição basica de arquivos===================================
+== vim/vim============================================================
+
+Modos de operação:
+  Navegação: 
+    teclando 'esc' 
+  Inserção: 
+    teclando 'i' ou teclar 'insert'
+    teclando 'o' insere a partir da linha de baixo
+    teclando 'O' insere a partir da linha de cima
+    teclando 'a' insere a partir do proximo caracter
+    teclando 'A' insere no final da linha
+  Visual:
+
+Procurar por um conteudo:
+  / busca do ponto atual até o final do arquivo
+  ? busca do ponto atual até o inicio do arquivo
+  n para procurar de cima pra baixo
+  N para procurar de baixo pra cima
+  
+Navegação:
+  h caracter anterior
+  j desce uma linha
+  k sobe uma linha
+  l vai para o proximo caracter
+
+Copiando, recortando e colando:
+  cc recorta a linha e entra no modo de edição
+  dd recorta a linha, mas não entra no modo de edição
+  yy para copiar
+  p  cola o conteudo
+
+Comandos:
+  :w  salva o arquivo
+  :wq salva e sai do arquivo
+  :x  salva e sai do aquivo
+  ZZ  salva e sai
+  :!  para forçar, ignorando qualquer aviso
+  :!<comando do bash> executa um comando e volta ao pressionar Enter
+
+Se digitarmos apenas Vi ele abre um espaco em branco
+para salvar temos que digitar :w <nome do arquivo>
+
+Carregando as alterações em um arquivo feitas pelo um outro processo
+digitamos :e!
+  
+  
+52. 103.8 Edição basica de arquivos===================================
+== nano/emacs=========================================================
+
+^ é o CTRL
+M é o ALT
+
+#######
+nano
+
+CTRL + o salva
+CTRL + x sai
+ALT + / final do arquivo
+ALT + \ para o inicio do arquivo
+CTRL + v proxima pagina
+CTRL + y pagina anterior
+CTRL + SHIFT + _ vai para a linha/coluna
+CTRL + w pesquisa por algo
+
+#######
+emacs
+
+Abrir o emacs no shell, temos que mudar a variavel DISPLAY colocando 
+vazio 'export DISPLAY=' pois por padrão ele abre na interface grafica
+
+CTRL + x + CTRL + c sai
+CTRL + x + CTRL + s salva
+CTRL + x + CTRL + w salvar como
+CTRL + x + CTRL + f cria um novo arquivo
+CTRL + k copia a partir do cursor
+CTRL + y cola
+CTRL + / desfazer
+ALT + x define o modo de ler o arquivo, como texto, html
+
+
+53. 103.8 Edição basica de arquivos===================================
+== Definir Editor padrão==============================================
+
+'select-editor' seleciona o editor padrão
+'update-alternatives --config editor'
+Alterando a variável de ambiente $EDITOR e $VISUAL
+  export EDITOR=emacs
+  export VISUAL=vim

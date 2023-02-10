@@ -1,0 +1,294 @@
+TOPICO 108: SERVIÇOS ESSENCIIAS DO SISTEMA=============================
+=======================================================================
+191. 108.1 Manutenção do horario do sistema============================
+== Relógios e os comandos date hwclock=================================
+
+Em uma máquina com o Linux nos temos dois relogios independentes
+  1° Hardware clock da BIOS
+  2° Software clock
+
+O comando 'date' exibe a data
+  -u exibe o horario em UTC
+  % é usado para formatar a exibição da data e hora
+  date <120112002016> para alterar o horario; 1 dez 2016 14hs
+
+O comando 'hwclock' exibe o horário da BIOS
+  -w ou --systohc pega a hora do sistema e configura no relogio do hw
+  -s pega a hora do hardware e configura no relogio do sw
+  --set --date "12/01/2017 14:00"  para configurar a data e hora
+
+
+192. 108.1 Manutenção do horario do sistema============================
+== Protocolo NTP=======================================================
+
+Temos que instalar o serviço de NTP
+  'apt-get install ntp'
+  'apt-get install ntpdate'
+
+Utiliza o UDP na porta 123
+Arquivo que mostra as portas de cada protocolo e serviços /etc/services
+O NTP pode ser como um Deamon ou seja, como um servidor NTP. 
+O arquivo de configuração do NTP fica em /etc/ntp.conf
+  driftfile - aquivos de logs da sincronia do horário
+  pool / server  - servidores que a maquina irá conectar
+
+A pool dos ntps www.pool.ntp.org
+Verificar as configurações
+  'ntpq -p'
+
+Atulização manual do NTP
+  'ntpdate <servidor>'
+  Ex: 
+    ntpdate 3.pt.pool.ntp.org
+  Podemos checar um servidor ntp com 'ntpdate -q 3.pt.pool.ntp.org'
+
+  
+193. 108.1 Manutenção do horario do sistema============================
+== chrony e timedatectl================================================
+
+O chrony é uma implementação do NTP, funcionando bem em redes intermi_
+tentes e ambiente instatáveis. As configurações ficam em:
+  /etc/chrony/chrony.conf
+
+O Daemon do chrony é o chronyd 
+O cli do chrony é chamado de chronyc
+  'chronyc tracking' - exibe os parâmentros de perfomace do system time
+  'chronyc sources -v' - exibe as fontes
+  'chronyc activity' - exibe os status
+
+O systemd-timeyncd.service é um servico do systemd para ntp
+O comando 'timedatectl' permite verificar se estamos utilizando ou não
+  o ajuste de hora pelo ntp
+    O Network time é referente ao servico do systemd, podemos desativar
+    usando o comando 'timedatectl set-ntp false'
+
+
+195. 108.2 Sistema de Logs=============================================
+== rsyslog=============================================================
+
+syslog --> rsyslog --> syslog-ng
+systemd-journal - sistema de gerenciamento de logs do systemd
+O padrão de hoje é o rsyslog e o systemd-journal trabalhando juntos
+
+Configurando o rsyslog: /etc/rsyslog.conf é o arquivo de configuração
+principal do rsyslog. 'man rsyslog.conf'
+  Os modules serevem para integrar com outros geradores de logs
+  www.rsyslog.com
+
+As configurações ficam em /etc/rsyslog.d/*.conf com o 50-default.conf
+  sendo o principal deles
+O padrão será:
+  facility.priority         /onde/sera/registrado, usuário, 
+                            @ip do servidor remoto
+
+  facility - quem está gerando aquele log
+  priority - o nivel de prioridade
+
+  Ex:
+    auth,authpriv.*       /var/log/auth.log
+    facility = auth e a authpriv e qualquer nivel de prioridade
+
+  Ex:   
+    *.*;auth,authpriv.none    -/var/log/syslog
+    qualquer facility e qualquer prioridade e (;) não sendo
+      auth e authpriv registre em /var/log/syslog, o "-" indica
+      que o log não será escrito imediatamente
+
+  Ex:
+    mail.err            /var/log/mail.err
+    o facility mail e prioridade err registe em /var/log/mail.err
+  
+Niveis de prioridades, do menor para o maior:
+  debug, info, notice, warning e warn, err e error, crit, alert
+  emerg e panic
+  Se definirmos uma priority automaticamente todos as prioritys 
+  superiores serão também envidas para o arquivo de log configurado
+  Ex:
+    samba.warn        /var/log/samba.warn
+      todas as mensagem de priorty warn, err, crit, alert e emerg
+      serão escritas em /var/log/samba.warn
+    
+    samba.=warn        /var/log/samba.warn
+      para esse caso, somente as mensagens de warn serão escritas
+      em samba.warn
+
+No sistema temos os facilitys local de 0 a 7 disponibilizadas para 
+crirarmos os nossos proprios logs
+  Ex:
+    No arquivo /etc/rsyslog.d/50-default.conf inserimos:
+    local0.err      /var/log/teste-rsyslog.out
+    
+    Para gerar o log:
+      'logger -t [TAG] -p local0.<priority> "Alguma Mensagem"'
+
+
+196. 108.2 Sistema de Logs=============================================
+== logrotate===========================================================
+
+Rotacionamento de logs serve para apagar os logs mais antigos.
+Os registro mais antigos são compactados .n°.gz e o ultimo é apagado
+e os mais recente são renomeados. 
+As configurações são feitas em /etc/logrotate.conf e outra parte das
+configurações estão em /etc/logrotate.d/rsyslog ou em inetutils-syslogd
+Ex:
+  /var/log/syslog {
+    rotate 7  // rotacione e mantenha os ultimos 7
+    daily     // rotacione diariamente será gerado um novo arquivo
+    compress  // será comprimido o arquivo
+    delaycompress  // o log anterior ao atual não será comprimido
+    missingok // sem problemas se não for encontrado o arquivo de log
+    notifempty  // se o arquivo estiver vazio, não rotacione
+    postrotate  // depois de rotacionar execute o script
+      /etc/init.d/inietutils-syslogd reload >/dev/null
+    endscript
+  }
+  
+O logrotate é executado pela chron
+  A configuração fica em /etc/cron.daily
+
+
+196. 108.2 Sistema de Logs=============================================
+== systemd-journal=====================================================
+
+O systemd-journal monitora as entradas do sistema e gerando logs
+  man journald.conf
+
+A configuração fica em /etc/systemd/journald.conf
+  os itens comentados são os padrões de sua configuração
+
+System é gravado em disco, enquanto que o Runtime fica em memória
+
+O comando 'journalctl' permite ler os logs
+  -10 as ultima 10 linhas
+  -f igual ao tail -f
+  -b mensagens relacionadas ao boot
+  _TRASPORT=<origem> tudo com essa origem 
+  _UID=<id usuario> tudo com esse id de usuario
+  --since="1 hour ago" todos os logs de 1 hora atrás
+
+As aplicações podem se comunicar atraves de sockets. Na configuração
+do socket temos o parâmetro de ListemDatagram que indica o que o 
+serviço está escutando
+
+O comando 'systemd-cat' manda a saida de um comando direto para o 
+journal fazendo:
+  Ex:
+    'systemd-cat ls -l rsyslog.conf'
+    'echo "Mensagem de Teste" | systemd-cat -p warning -t [TAG]'
+
+Verificar o tamanho dos logs: 
+  'du -sh .'
+  'journalctl --disk-usage'
+
+Limpar os espaços, removendo os arquivos de journal archiver:
+  'journalctl --vaccum-size=200M'
+
+Verificar os logs comrrompidos:
+  'journalctl --verify'
+
+Gravar em arquivo os logs que estão ainda na memória:
+  'journalctl --sync'
+
+
+199. 108.3 Básico sobre Agentes de Envio de Emails (MTA)===============
+== Principios de MTA e SMTP comando mail e alias=======================
+
+MTA - Mail Transfer Agent
+  Programa responsável pelo envio e recebimento de e-mail
+
+SMTP - Simple Mail Transfer Protocol
+  Protocolo utilizado para envio de mensagens entre servidores
+  Utiliza por padrão a porta 25
+
+Principais MTAS no Linux
+  sendmail, postfix, exim
+
+O comando 'mail' permite mandar e ler mensagens
+  -s de assunto
+  -
+  Ex:
+    mail -s "assunto" <usuario>
+    podemos digitar o conteudo usando o eco
+    echo "mensagen 2" | mail -s "mensagem 2 echo" paulo
+
+O arquivo com as mensagem ficam em /var/spool/mail
+
+Redirecionamento de mensagens em editamos o arquivo /etc/aliases, apos
+editar rodamos 'newaliases'
+Os usuários podem criar no proprio home um arquivo ".forward" para
+redirecionar e-mails
+
+Verificar a fila do servidor de e-mail utilizamos o comando 'mailq' ou
+'sendmail -bp' 'postqueue -f'
+
+
+204. 108.4 Gerencimento de impressoras=================================
+== Administração do CUPS via Web=======================================
+
+O comando 'lsusb' lista os dispositivos USBs
+
+CUPS - Common Unix Printing System
+
+Configrando via interface web
+  http://127.0.0.1:631
+
+Adicionando uma impressora:
+  Adminstration --> seleciona a impressora --> CONTINUAR
+  Configura o nome da impressora. descricão, localização --> CONTINUAR
+  Selecionar o driver --> CONTINUAR --> Selecionar o padrão
+
+As configurações do CUPS ficam em /etc/cups
+As impressoras do CUPS ficam em /etc/cups/printers.conf
+
+O comando 'cupsenable' inicia uma impressora desativada
+O comando 'cupsdisable' para uma impressora
+  -c cancela todos os jobs da impressora
+  -r especifica uma mensagem com a razão do comando
+O comando 'cupsaccept' instrui o sistema aceitar jobs para impressora
+O comando 'cupsreject' instrui o sistema regeitar jobs para impressora
+
+205. 108.4 Gerencimento de impressoras=================================
+== Comandos lpadmin, lpstat, lpinfo, lpstat============================
+
+O comando 'lpinfo' lista os dispositivos de impressão e os drivers
+  -v dispositivos que o CUPS está identificado
+  -m mostra os drivers disponivies já instalados
+
+O comando 'lpstat' mostra o status das impressoras
+  -a mostra o status de todas as impressoras
+  -t mostra mais detalhes
+  -d mostra a impressora padrão
+
+O comando 'lpq' mostra a fila de impressão
+
+Identificando o driver para a impressora
+  lpinfo -m | grep "<nome da impresora>"
+    salve o nome do arquivo para posterior uso
+
+O comando 'lpadmin' permite adiconar uma impressora
+  -p nome da impressora
+  -E para tornar a impressora disponivel assim que configurada
+  -v para indicar o device obitido pelo comando 'lpinfo -v'
+  -m para indicar o driver obtido pelo comando 'lpinfo -m'
+  -x para remover a impressora
+
+O comando 'lpoptions' mostra as propriedades e para alterar as config
+das impressoras cadastradas
+  -p mostra a propriedades da impressora
+  -d para trocar a impressora default
+
+
+206. 108.4 Gerencimento de impressoras=================================
+== Comandos lpr, lprm, lpq=============================================
+
+O comando 'lpr' permite mandar imprir um aquivo
+Ex:
+  lpr /etc/passwd -#2 -P <nome da impressora>
+  -#2 para quantidade de copias
+
+Os arquivos de impresão ficam em /var/spool/cups
+Os logs do cups ficam em /var/log/cups
+
+O comando 'lprm' limpa itens na fila de impressão
+  -P especifica a impressora
+  - remove todos o jobs de impressão

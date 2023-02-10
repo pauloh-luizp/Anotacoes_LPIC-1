@@ -1,0 +1,355 @@
+TOPICO 109: FUNDAMENTOS DE REDES=======================================
+=======================================================================
+212. 109.1 Fundamentos de protocolos de internet=======================
+== IPv4, IPs Privados Classes de IP====================================
+
+O endereço IPv4 é formado por 32 bits, separados em 4 grupos de 8 bits,
+representado de maneira decimal
+
+3 principais classes:
+Classe    Primeiro octeto   Range  
+  A           1-126         1.0.0.0 - 126.255.255.255
+  B           128-191       128.0.0.0 - 191.255.255.255
+  C           192-223       192.0.0.0 - 223.255.255.255
+
+IPs usados em redes privadas, aquelas que não estão voltada 
+para internet, portanto não reconhecidos na internet
+Classe    IPs Privados     
+  A       10.0.0.0 - 10.255.255.255
+  B       172.16.0.0 - 172.31.255.255
+  C       192.168.0.0 - 192.168.255.255
+
+
+213. 109.1 Fundamentos de protocolos de internet=======================
+== Mascara de rede=====================================================
+
+Classe    Mascara padrão     
+  A       255.0.0.0 /8
+  B       255.255.0.0 /16
+  C       255.255.255.0 /24
+
+O primeiro endereço é o indentificador da rede e o ultimo o broadcast
+
+
+214. 109.1 Fundamentos de protocolos de internet=======================
+== Gateway, IPv6, TCP, UDP, ICMP=======================================
+
+O endereço IPv6 é formado por 128 bits, divididos em 8 grupos de 
+16 bits, representados por numeros hexadecimais
+Ex:
+  2001:0db8:85a3:1319:8a2e:0370:7344
+
+Unicast: identifica uma única interface
+Multicast: identifica um conjunto de interfaces. Um pacote é enviado
+para cada interface
+Anycast: identifica um conjunto de interfaces. Um pacote é enviado para
+uma única interface, normalmente a mais próxima
+
+#######
+Protocolo TPC
+TCP = Transmission Control Protocol
+Protocolo de transporte orientado a conexões
+O TCP garante a entrea dos pacotes na ordem correta
+O pacote é retransmitido em caso de erros na rede
+Utilizado por servições como FTP, NFS e NTP
+
+#######
+Protocolo UDP
+UDP = User Datagram Protocol
+Protocolo de transporte não orientado a conexões
+Não oferece garantia de entrega dos pacotes
+Melhor performace na transmissão de dados
+Utilizado por serviços como DNS e NTP
+
+#######
+Protocolo ICMP
+ICMP = Internet Control Message Protocol
+Utilizado para transmitir informações de controle entre os elementos
+de rede, por exemplo:
+  Controle de volume de tráfego
+  Detecção de destinos não atingíveis
+  Redirecionamento de rotas
+  Verificação de status de hosts remotos
+
+#######
+Portas e serviços
+
+Cada serviço e provido através de uma porta
+Portas possuem 16bits, ou seja, um máximo de 65535
+As primeira 1024 portas são reservadas a serviços conhecidos
+As demais portas são utilizadas para serviços específicos ou para 
+a porta de socket de uma conexão
+
+No IPv6 a separação entre IP se dá pelo uso de colchetes
+   [2001:0db8:85a3:1319:8a2e:0370:7344]:80
+
+#######
+Principais portas e serviços
+
+Porta(s)          Serviço
+20 e 21           FTP
+22                SSH 
+23                Telnet
+25 e 465          SMTP e SMTPS
+53                DNS
+67 e 68           DHCP
+80 e 443          HTTP e HTTPS
+110 e 995         POP3 e POP3S
+123               NTP
+139               Netbios
+143 e 993         IMAP e IMAPS
+161 e 162         SNMP
+389 e 636         LDAP e LDAPS
+
+
+216. 109.2 Configurações persistentes de Redes=========================
+== Arquivos de configuração e comandos=================================
+
+O arquivo /etc/hostname define o nome da máquina
+O comando 'hostname' e 'hostnamectl' exibem o nome da máquina
+
+O hostnamectl permite alterar o nome da máquina
+  'hostnamectl set-hostname <novo nome>'
+
+O arquivo /etc/hosts é o arquivo que criamos uma relação estática 
+entre IP e nome da máquina
+Ex:
+  127.0.0.1   mustard-01
+  192.168.3.15  mustard-02
+
+O arquivo /etc/nsswitch.conf (name server switch) é o arquivo contém 
+informações de onde ele busca certos parâmetros como passwd, group e
+shadow.
+O padrão é compat (compatibilidade) siginifica que ele buscará essas
+informações internamente
+Ex
+  hosts:       files mdns4_minimal [NOTFUND=return] dns
+  networks:    files
+
+  Ele buscará primeiro em aquivos internos e depois em um dns local
+
+O arquivo /etc/networks contem a configuração do nome da rede
+O arquivo /etc/resolv.conf  contém a configuração de qual servidor
+DNS que será utilizado
+O arquivo /etc/network/interfaces contém a configuração de rede das
+interfaces
+
+218. 109.2 Configurações persistentes de Redes=========================
+== NetworkManager======================================================
+
+HAL - Hardware Abstraction Layer
+
+nmcli é a CLI do NetworkManager
+Os arquivos de configuração ficam em /etc/NetworkManager/
+O arquivo conf.d contem as configurações
+O arquivo system-connections contém as redes conhecidas pela máquina
+
+O comando 'nmcli' sem parâmetros exibe as placas de rede e o DNS
+  nmcli device show <nome da interface> - mostra detalhes da interface
+  nmcli general status - mostra os detalhes da conectividade
+  nmcli networking - mostra se a rede cabeada está funcionando
+  nmcli radio - mostra se a rede wireless está funcionando
+  nmcli connection - mostra as informações baseadas no nome da conexao
+  nmcli connection <donw/up> "<nome da conexao> - ativa ou desativa
+
+#######
+Rede com fio
+Adiconando nova conexão rede com fio:
+  nmcli connection add type <tipo de conexao> con-name <nome> 
+    ifname <nome da interface> 
+    ip4 <IP e mascara> gw4 <gateway e mascara>
+  Ex:
+    nmcli connection add type ehternet con-name nova-rede 
+    ifname enp0s3
+    ip4 192.168.8.100/24 gw4 192.168.8.1
+
+  Depois subimos a nova conexão:
+    nmcli con up <nome>
+
+#######
+Rede sem fio
+O comando 'nmcli device wifi list' mostra toda a lista de redes wifi
+disponíveis
+
+O comando 'nmcli device wifi rescan' busca por novas redes
+O comando 'nmcli radio wifi <off/on>' liga ou desliga a rede wifi
+
+Conectando a uma rede wifi:
+  nmcli device wifi connect <SSID> password <senha>
+  nmcli device disconnect <interface> - para desconectar
+
+
+219. 109.2 Configurações persistentes de Redes=========================
+== systemd-network=====================================================
+
+Instalação do pacote 'ifupdown'
+Para que os comandos funcione é necessário que as interfaces estejam
+configuradas no arquivo /etc/network/interfaces
+
+O systemd-networkd é o servico do systemd para a configuração de rede
+Para usa-lo é necessário desativar o NetworkManger
+  'systemctl stop NetworkManager'
+
+Os arquivos estão localizados no /lib/systemd/network em que os *.link
+são os links  e *.network são as interfaces
+Os arquivos também podem estar no /run/systemd/netif quando em tempo
+de execução
+
+
+221. 109.3 Resolução de Problemas de Redes=============================
+== ip==================================================================
+
+Pode ser necessário instalar o pacote 'iproute2'
+
+O comando 'ip link show' exibe algumas informações das interfaces
+Este comando atua diretamente nas interfaces e nas rotas
+
+É possivel obter ajuda a cada parte do comando digitando help na frente
+Ex:
+  'ip addr help' 
+
+#######
+Manipulando os endereços da interface
+
+O comando 'ip address show' exibe as configurações de IP das interfaces
+O comando 'ip route show' ou 'ip route list' exibe as rotas
+O comando 'ip address add <IP/mask> dev <interface>' adiciona um 
+endereco IP na interface. A interface pode ter mais de um endereço IP
+Usamos 'ip address del <IP/mask> dev <interface> para remover
+O comando 'ip addr flush dev <interface>' exclui todos os IPs da 
+interface em questão
+!!!!!!!!Essas configurações estão em memória!!!!!!!!!!!!!!
+
+#######
+Manipulando a interface em si
+
+Os comando 'ip link' são para configuração da interface
+Subindo ou baixando uma interface:
+  'ip link set <interface> down'
+  'ip link set <interface> up'
+
+#######
+Manipulando rotas
+
+O comando 'ip route' são para manipulação de rotas
+Adicionando e removendo rotas:
+  'ip route add default via <IP do roteador> dev <interface>'
+    para configurar uma rota padrão
+  
+  'ip route add <rede de destino> via <IP do roteador> dev <interface>'
+    para configurar rotas
+
+
+222. 109.3 Resolução de Problemas de Redes=============================
+== ifconfig e route====================================================
+
+Em distribuições mais novas o 'ifconfig' não vem instalado por padrão
+sendo necessário instalar 'apt-get install net-tools'
+
+O comando 'ifconfig -a' mostra as informações básicas das interfaces,
+mesmo aquelas que estão desabilitadas
+
+Subindo ou descendo uma interface:
+  'ifconfig <interface> down'
+  'ifconfig <interface> up'
+
+Configurando uma interface:
+  'ifconfig <interface> <IP> netmask <mascara> up'
+    o 'up' no final é para já subir a inteface já com o ip'
+  'ifconfig <interface>:<numero> <IP> netmask <mascara>
+    o numero permite atribuir mais de um endereço IP para a interface
+
+O comando 'route -n' mostra a tabela de roteamento, -n para não 
+resolver os nomes
+  'route add default gw <IP do roteador>' - adiciona uma rota padrão
+  'route add -net <rede/mascara> gw <gateway> - adiciona uma rota 
+    especifica
+
+
+223. 109.3 Resolução de Problemas de Redes=============================
+== Comandos de debug===================================================
+
+O comando 'hostname -d' para exibir o dominio
+  'hostname -f' para exibir o Fully Qualified Domain Name
+    as informações são buscadas no arquivo /etc/hosts
+
+O comando 'ping' serve para enviar pacotes ICMP de teste
+  É enviado um ECHO_REQUEST e o host remoto responde com ECHO_REPLY
+  -c5 para especificar a quantidade de pacotes
+  -i2 para enviar a cada 2 segundos
+  -4 para usar IPv4
+  -6 para usar IPv6
+
+Temos o comando 'ping6' que é especifico para IPv6
+
+O comando 'traceroute' serve para mostrar todos os saltos no caminho
+Utiliza pacotes UPD
+  -I para utilizar pacotes ICMP
+  
+Temos o comando 'traceroute6' que é especifico para IPv6
+
+O comando 'tracepath' é semelhante ao 'traceroute' mas não requer o uso
+de super usuário para utilização de todas as suas funções
+
+O comanto 'ss' é do pacote iproute2 e o 'netstat' é do patote ne-tools
+
+O comando 'ss' exibe todas as conexões e sockets  ativas na máquina
+  -a exibe as conexões para todos os sockets
+  -tu exibe apenas as conexões TCP e UDP ativas
+  -tua exibe todas as conexões TCP e UDP ativas, sem estado e ouvindo
+  -n não resolve o numero da porta, obtem a informação pelo arquivo
+    /etc/services
+  -p exibe o PID do processo que é responsável pela conexão
+
+O comando 'netcat' ou 'nc' é utilizado para teste de conexão na máquina
+ou para abrir conexões na máquina. Serve também para deixar uma porta
+na escuta
+Ex:
+  netcat <IP> <porta>
+  netcat 127.0.0.1 22
+
+Ex:
+  nc -l -p 1234
+  -l listen
+  -p porta
+  nc -vz 192.168.1.19 1234
+  -v para verbose
+  -z para testar a conexão com a porta ou range de [portas-portas]
+
+
+226. 109.4 Configuracao de Cliente DNS=================================
+== Arquivos e comandos=================================================
+
+O arquivo /etc/hosts tem as referencia fixa de IP e nome
+O arquivo /etc/nsswitch.conf arquivo que cita as configurações de 
+  consulta DNS
+O arquivo principal de resolução de nomes é o /etc/resolv.conf
+  O arquivo é gerado automaticamente na maioria das distribuições
+  o nameserver indica qual endereço será consultado
+  o domain é o dominio principal da máquina
+  o search é uma lista de dominios que o sistema pode considerar para
+    a consulta
+
+O comando 'systemd-resolve --status' exibe o status do DNS
+O comando 'systemd-resolve --statistics' exibe as estatisticas
+
+O comando 'host' é usado para resolução de nomes de dominio e IPs
+  -t tipos de dominio
+  
+O comando 'dig' é semelhante ao 'nslookup' e sua funcionalidade é
+mais aprimorada em relação ao comando 'host'. O dig consulta o 
+systemd-resolv e ele faz a consulta no arquivo /etc/resolv.conf
+e retorna para o dig. Podemos especificar um servidor para o dig usar:
+Ex:
+  dig debian.org @1.1.1.1
+  +short - exibe apenas no endereço IP do dominio solicitado
+  -x para realizar consulta de DNS reverso
+
+O comando 'getent' obtem informações do NSSL 
+(Name Service Switch Libaries) buscando no arquivo /etc/nsswitch.conf
+Ex:
+  getent hosts www.debian.org
+
+
+
+

@@ -1,0 +1,83 @@
+TOPICO 106: INTERFACES DE USUÁRIO E DESKTOPS===========================
+=======================================================================
+160. 106.1 Instalar e configurar X11===================================
+== ambiente X11 e o xorg.conf==========================================
+
+O ambinete X11 é uma implementação da interface X da x.org foundation
+O gnome, xde, xfce são gerenciadores de janelas
+O X é um servidor de interface gráfica, todos os programas que rodam
+em cima do servidor X são clientes do servidor X
+
+O arquivo de configuração fica em /etc/X11/xorg.conf
+Por padrão esse arquivo não vem nas distribuições
+Para gerar esse aquivo temos que ir para outro terminal que não seja
+gráfico. CTRL + ALT + F<1-6>, iserimos o comando
+'systemctl isolate multi-user.target' para parar o X
+damos o comando 'xorg -configure' o arquivo gerado vai para o /root
+e o copiamos para /etc/X11/xorg.conf
+
+
+162. 106.1 Instalar e configurar X11===================================
+== Uso da variável DISPLAY=============================================
+
+Para configurar a variavel DISPLAY para que o programa solicitado abra
+em outra maquina:
+  export DISPLAY="<IP>:0.0"
+
+Temos que liberar na outra máquina:
+  'xhost +<IP>' ou 'xhost +'
+  Configuramos também no aquivo
+  /usr/share/lightdm/lightdm.conf.d/50-xserver-command.conf
+  e adicionamos uma linha:
+    xserver-allow-tcp=true
+  Reiniciamos o lightdm: 'systemctl restart lightdm'
+
+Podemos liberar utilizando o 'xauth list'
+  Pegando o um dos MIT-MAGIC-COOKIE dda4353dseac5646
+  Na outra maquina iserirmos:
+    'xauth add <IP>:0 MIT-MAGIC-COOKIE dda4353dseac5646'
+
+
+163. 106.1 Instalar e configurar X11===================================
+== Desktop Envrionment=================================================
+
+O Desktop Envrionment é um conjunto de apliações para prover uma 
+interface gráfica como: kde, gnome, mate, lxde
+
+#######
+Gerenciador de janelas
+  Controla a criação e fechamento das janelas no ambiente e o 
+    posicionamento
+  São cliente X
+  Podem ser parte integrada de um DE ou independentes
+  
+  Comando para exibir o window maanger utilizado
+    'update-alternatives --display x-window-manager'
+    'ls -l /etc/alternatives/ | grep window'
+
+#######
+GUI
+  Interface gráfica que o usuário interage
+
+#######
+Display Manager (DM)
+  Interface para realização do login
+
+
+164. 106.1 Instalar e configurar X11===================================
+== Comandos e arquivos=================================================
+
+Todos os usuários tem em seu diretorio home o arquivo
+  .xsesion-erros que é um aquivo de log do X
+
+
+
+166. 106.1 Desktops Gráficos===========================================
+== Configuração de mouse, teclado, tela e aplicações===================
+
+Protocolos para acesso remoto aos ambientes gráicos
+  XDMCP
+    'Xorg -terminate -query <IP> :1'
+  VNC
+  SPICE
+  RDP

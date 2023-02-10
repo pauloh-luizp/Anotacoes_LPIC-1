@@ -1,0 +1,265 @@
+TOPICO 101: ARQUITETURA DO SISTEMA=====================================
+=======================================================================
+58. 101.1 Identificar e Configurar o Hardware==========================
+== BIOS, IRQ, Endereços I/O, DMA=======================================
+
+BIOS: Basic Input Output System
+POST: Power-On Self-Test
+Gerencia dispositivos, IRQ, I/O, DMA, etc
+Inicia o processo de Boot
+EFI (Extensible Firmware Interface)
+UEFI (Unfied EFI)
+
+#######
+IRQ: Interrup Request, sinal enviado ao CPU. /proc/interrupts
+A sequencia segue 0,1,8,9,10,11,12,13,14,15,3,4,5,6,7
+
+/proc file system dinamico e contem informações dos dispositivos e do
+sistema em si
+
+#######
+Endereços I/O (E/S)
+Lista de Enderecoes de memoria utilizadas para comunicação entre o CPU
+e os demais dispositivos de hardware
+/proc/ioports
+
+#######
+DMA: Direct Memory Addressing
+Um canal que permite que os dispositivos transmitam os dados
+diretamente para a memória, sem utilizar a CPU
+Não é utilizado por todos os dispositivos
+/proc/dma
+
+59. 101.1 Identificar e Configurar o Hardware==========================
+== PCI, USB, /dev /sys /proc, sysfs====================================
+
+PCI - Peripheral Component Interconnect
+  'lspci'
+  -s <identificador> -v permite visualizar maiores detalhes
+
+USB - Universal Serial Bus
+  'lsusb'
+  -s <bus:device> -v permite visualizar maiores detalhes
+
+#######
+Partições virtuais
+
+/proc - informações dos processo ativos e recursos de hardware
+/sys - informações sobre dispositivos de hardware (sysfs)
+        sysfs é o file system do sys
+/dev - referencia aos dispositivos do sistema, inclusive de 
+  armazenamento (udev). udev = device manager
+
+dbus/hald = comunicação entre processos. Informa os processos a 
+  situação dos dispositivos de hardware
+
+O /proc contém informações do sistema
+As informações sobre a CPU estão disponíveis em /proc/cpuinfo
+As informações sobre a memória estão disponíveis em /proc/meminfo
+As informações sobre o swap estão disponíveis em /proc/swaps
+Os parâmetros que o bootloader lê estão em /proc/cmdline
+Os tipos de filesystem que podem ser usado estão em /proc/filesystem
+Os filesystem montados estão em /proc/mounts
+
+O /sys contém informações sobre o hardware
+
+O /dev tem as referencias a um dispositivo de hardware
+
+61. 101.1 Identificar e Configurar o Hardware==========================
+== udev================================================================
+
+O udev identifica os dispositivos conectados e cria os mapeamentos para
+esses dispositivos no sistema. As regras das ações tomadas estão em
+/lib/udev/rules.d/ o usuario e administrador pode criar as regras e
+/etc/udev/rules.d/
+O udev utiliza um filesystem que fica em memória, do type=tmpfs
+
+
+62. 101.1 Identificar e Configurar o Hardware==========================
+== IDE, PATA, SATA, SCSI===============================================
+
+PATA - Parallel Advanced Technology Attachment
+  Mapeados como:
+    /dev/hda ou sda - master
+    /dev/hdb ou sdb - slave
+    /dev/hdc ou sdc - master
+    /dev/hdd ou sdd - slave
+
+SATA - Serial Advanced Technology Attachment
+  Mapeados como:
+    /dev/sda - Primeiro disco
+    /dev/sdb - Segundo disco
+    /dev/sdc - Terceiro disco
+
+SCSI - Small Computer System Interface
+
+
+63. 101.1 Identificar e Configurar o Hardware==========================
+== lsmod, modinfo, modprobe, insmod====================================
+
+Os modulos dos dispositivos são equivalente aos drivers
+Os modulos ficam em /lib/modules/ verificar qual o arqivo utilizado 
+  pela kernel atual. Os arquivos .ko são os modulos
+
+Podemos definir quais modulos que queremos que seja carregado em 
+/etc/modules
+
+O comando 'lsmod' lista os modulos carregados pelo Linux. O 'lsmod' lê
+  as informações /proc/modules
+
+O comando 'modinfo' mostra os detalhes de um modulo
+
+O comando 'rmmod' remove o modulo dos modulos já carregados
+Ex:
+  'rmod <nome-do-modulo>'
+  'rmod psmouse'
+
+O comando 'insmod' carrega um modulo, mas não carrega as dependências
+Ex:
+  'insmod <caminho-do-modulo>'
+  'insmod /lib/modules/4.8.0-46/kernel/drivers/input/psmouse.ko'
+
+O comando 'modprob' carrega ou remove um modulo e carrega as 
+  dependencias
+Ex:
+  'modprobe <nome-do-modulo>' para inserir um modulo
+  'modprobe -r <nome-do-modulo>' para remove um modulo
+
+
+64. 101.1 Identificar e Configurar o Hardware==========================
+== modprobe============================================================
+
+É possivel usar arquivos de configuração para determinar e configurar
+algumas coisas /lib/modprob.d como adminstrador utilizamos o diretorio
+/etc/modprob.d
+
+O arquivo fbdev-blacklist.conf faz o modprob ingnorar um modulo, muita
+  das vezes por conta de conflitos ou por outro problema
+
+
+66. 101.2 O processo de Boot===========================================
+== BIOS================================================================
+
+A MBR está localizada no primeiro setor do disco bootável, contém as 
+informações sobre o GRUB e o carrega
+
+O Bootloader é gerenciado de boot, tem a função de carregar o sistema
+  operacional na memória. Carrega também o initd/initramfs responsável
+  por dar suporte ao kernel
+
+O Init tem a função de iniciar os primeiros processos e serviços do 
+  Linux. Possui ID 1. Possui RunLevels ou Targets que define diferentes
+  modos de operação e o grupo de serviços que será iniciado
+
+O comando 'dmesg' permite visualizar as infomações/log processadas
+durante o boot. Também é possivel visualizar essas informações em
+/var/log/mensage ou /var/log/dmesg
+
+
+67. 101.2 O processo de Boot===========================================
+== UEFI================================================================
+
+UEFI - Unifed Extensible Firmware Interface
+
+O UEFI não utiliza a MBR, ele obtem os bootloaders pelo ESP 
+  (EFI system Partition) montada no diretório /boot/efi que utiliza um
+  file system do tipo FAT
+  Utiliza (preferencialmente) particoes GPT
+  Implementa o Boot Seguro
+  Possui modo de compatibilidade 
+  Configuramos o UEFI Boot Manager pelo comando 'efibootmgr'
+
+
+68. 101.2 O processo de Boot===========================================
+== journalctl==========================================================
+
+O comando 'journalctl' faz a coleta de logs e informações do sistema
+  -b mostra os logs do boot atual
+  -k mostra as mensagens do kernel do boot atual
+
+
+70. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
+== SysV/init===========================================================
+
+O sysV trabalha com RunLevels que é o nivel de execução do sistema e 
+cada RunLevel carrega um conjunto de programas, scritps e serviços
+O arquivo de configuração principal fica em /etc/inittab
+Os scripts em /etc/init.d/ e /etc/rd.d/
+
+Os RunLevels
+  ID            Descrição
+  0             Desligamento
+  1,s,S         Single user / Mode de recuperação
+  2             Multi usuário (sem rede)
+  3             Multi usuário (com rede)
+  4             Multi usuário (definido pelo usuário)
+  5             Multi usuário (com rede e gráfico)
+  6             Reinicialização
+
+O comando 'runlevel' mostra o runlevel em que estamos
+O comando 'init <ID-runlevel>' ou 'telinit' altera o runlevel
+O comando 'telinit' é semelhante ao init
+  q Q recarrega as configurações do daemon do init
+  u U reexecutar o daemon do init
+
+Para iniciar um processo fazemos
+  '/etc/init.d/<processo> start'
+
+72. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
+== systemd=============================================================
+
+O systemd é melhor que o init. Utiliza o conceito de Units.
+
+A unit = nome.tipo (ex: httpd.service)
+
+Tipos de serviços: service, socket, device, mount, automount, snapchat
+  target (equivalente aos runlevels)
+
+O diretorio principal de configuração fica em /lib/systemd/system
+  o target.default aponta para qual target será utilizado
+  Outro diretório é o /etc/systemd/system
+
+O principal comando é o 'systemctl'
+  list-units exibe todas as unidades
+  setdefault <nome-do-target> altera o target default
+  is-enable verifica se está ativo
+
+Mudando de target no systemd
+  'systemctl isolate <nome-do-target>'
+             default inicia o target default
+
+73. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
+== upstart=============================================================
+
+O upstart é um geranciador de serviço que mantem a compatibilidade com
+o init. As configuração ficam /etc/init
+Principais comandos:
+  'initctl'
+  
+
+74. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
+== shutdown, reboot, poweroff==========================================
+
+Quando damos o comando 'shutdown' os processos recebem dois sinais:
+  SIGTERM e SIGKILL. O shutdown permite programar o desligamento
+  -c para cancelar um comando de shutdown
+  -r o sistema será reiniciado
+  -h halt desliga o linux mas não desliga a maquina
+  +10 agenda para daqui 10min
+  18:00 programa o desliamento para as 18hs
+
+Os comando 'reboot', 'poweroff' e 'halt' são semelhantes ao 'shutdown'
+
+O comando 'wall' é utilizado para mandar uma mensagem para todos os 
+  usarios do sistema
+
+75. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
+== acpi================================================================
+
+ACPI - Advanced Configuration and Power Interface
+
+Trata de itens referentes ao genrenciamento de eneriga do hardware
+O processo acpid monitora os eventos relacionados ao gerenciamento de
+  energia da máquina
+
+O comando 'acpi' mostra informações relacionados a energia

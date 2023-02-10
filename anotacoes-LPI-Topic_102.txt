@@ -1,0 +1,333 @@
+TOPICO 102: INSTALACAO DO LINUX E GERENCIAMENTO DE PACOTES=============
+=======================================================================
+80. 102.1 Designi do Layout do HD======================================
+== Conceitos: Partição, Ponto de montagem, FS MBR======================
+
+Partição: dividir o disco em partes em que podemos ter
+sda1, sda2, sda3, sda4
+sdb1, sdb2
+
+Ponto de montagem: associamos um diretório a uma partição
+/ - em sda1,
+/var - em sda2,
+/home - em sda3
+swap - em sda4
+
+Vantagems do particionamento: 
++ Gerenciamento do Espaço em Disco
++ Diferente tipos de FileSystem para cada partição
++ Proteção contra erros do disco
++ Diferentes níveis de segurança
++ Backup facilitado
+
+Sistemas de particionamento:
+MBR: Master Boot Record
+  Padrão mas é limitado a 2TB por partição
+  Pode ter 4 partições primárias, ou 3 primárias e 1 extendida
+    a extendida permite criar diversas outras partições logicas
+    A primária são numeradas de 1 a 4. As lógicas a partir de 5
+    Primária: sda1, sda3, sd4. Pode haver gaps, 1,3,4
+    Lógica: sda5, sda6, sda7, sda8. É continua, 5,6,7,8,9
+GPT: GUID Partition Table
+  Utilizado quando são necessárias partições maiores que 2TB
+  Maioria dos sistemas com EFI utilizam GPT
+
+Partições:
+  A partição / é a primeira a ser montada. Ao menos temo que ter a /
+  e a swap.
+  Códigos dos tipos de partição:
+    0x83 = Linux FIleSystem
+    0x82 = Linux swap
+  /home - Onde fica dos dados dos usuários
+  /var - Onde fica os arquivos de logs
+  /tmp - Onde fica os arquivos temporários
+  /boot - Onde fica os arquivos do kernel, initrd, carregados pelo
+    gerenciador de boot
+  /usr - Arquivos de aplicações
+  
+  Diretórios que não podem ser montados fora do /
+    /etc, /bin, /sbin, /dev, /proc, /sys
+
+81. 102.1 Designi do Layout do HD======================================
+== Conceitos LVM=======================================================
+
+LVM - Logical Volume Managment
+
+Método para alocar espaço dos discos em volumes lógicos, facilitando o
+redimensionamento
+Elementos:
+  VG: Volume Group
+  PV: Phisical Volume
+  LV: Logical Volume
+  PE: Physical Extent
+  LE: Logical Extent
+
+81. 102.1 Designi do Layout do HD======================================
+== UEFI e ESP==========================================================
+
+UEFI Caracteristicas:
+  Implementa o Boot Seguro
+  Possui modo de compatibilidade com a BIOS
+  Configurado pelo UEFI Boot Manager
+    No Linux atráves do comando: efibootmgr
+
+'df -T' mostra todas as partições
+
+O ESP está localizado em df/boot/efi
+
+
+84. 102.2 Instalação e configuração do Boot Managemnt==================
+== Grub Legacy e Grub 2================================================
+
+Processo de BOOT
+
+> BIOS > MBR > Bootloader(GRUB/LILO) > Kernel > Init
+
+BIOS: Localiza e executa a MBR
+MBR: Executa o Bootloader
+Bootloader: Seleciona e executa o Kernl e o initrd
+Kernel: Executa o /sbin/int
+Init: Inicia os programas do runlevel/target definido
+
+GRUB - GRAND UNIFIED BOOT LOADER
+
+A paritr da configuração dos arquivos que estão nos diretórios
+/etc/default/grub e /etc/grubd/ que será gerado o 
+/boot/grub/grub.cfg
+
+Em /boot/ temos versões anteriores da Kernel, teste de memória,
+aplicações para recovery, initrd e o arquivo de configuração do grub
+
+O arquivo de configuração do grub é o grub.cfg, para atualiza-lo
+utilizamos os comandos:
+  'update-grub' ou 'grub-mkconfig -o <arquivo a ser atualiado>'
+O arquivo do grub que podemos alterar é o /etc/default/grub
+O scripts usados para montar o grub.cfg ficam em /etc/grub,d/
+
+'update-grub --version' exibe a versão do grub
+
+Backup do arquivos do grub:
+  'dd if=<disco de origem> of=<nome do arquivo de backup> bs=1
+  bs=1 é Byte por Byte
+
+Recuperando o grub:
+  'dd if=<nome do arquivo de backup> of=<disco de destino>'
+
+84. 102.3 Gerenciamento de bibliotecas compartilhadas==================
+=======================================================================
+
+Uma biblioteca compartilhada é biblioteca que é acessada fora da aplica
+cao, compartilhada por diversas aplicações, não sendo necessária a 
+criação de uma nova biblioteca. Permite ter aplicações menores e a
+biblioteca compartilhada fica carregada na RAM, cada vez que a bibliote
+ca muda não é necessário recompilar a aplicação.
+
+A biblioteca estática é incorporada na aplicação tornando a maior e se
+todas as aplicações tiverem uma biblioteca estática gastaremos mais 
+memória.
+
+O comando 'ldd' exibe as bibliotecas usadas por determinada aplicação
+Ex: 
+  whereis vi
+  ldd /usr/bin/vi
+  os .so são as bibliotecas
+
+Diretorios padrão que a ld.so busca as bibliotecas /lib e /usr/lib
+
+O mapeamento de todas bibliotecas conhecidas estão em /etc/ld.so.cache
+O ld.so.conf é o arquivo de configuração em que podemos adicionar 
+novos caminhos de bibliotecas
+Para incluir uma nova biblioteca
+  vim /etc/ld.so.conf; adicionar uma linha
+  ldconfig
+O comando 'ldconfig' recompila o ls.so.cache
+
+Para incluir bibliotecas sem ser usuario root, utilizamos uma variavel
+de ambiente LD_LIBRARY_PATH
+
+
+90. 102.4 Gerenciamento de pacotes Debian==============================
+== Debian x RPM, comando dpkg==========================================
+
+#######
+Padrão Debian
+Arquivos: .deb
+Gerenciador de pacotes: dpkg
+Gerenciador + repositório: apt-get
+Outros comandos:
+  dpkg-reconfigure
+  apt-cache
+  dselect
+  aptitude
+  alien
+Nome do arquivo:
+  name_version.revision-debaincodename_architecture.deb
+
+#######
+Padrão RPM/RedHat
+Arquivos: .rpm
+Gerenciador de pacotes: rpm
+Gerenciador + repositorio: yum
+Outros comandos:
+  yumdownloader
+  rpm2cpio
+Nome do arquivo:
+  name-version-release.arch.rpm
+
+Cada sistema deve usar um sistema de gerenciamento de pacotes único
+
+Um pacote é um conjunto de arquivos relacionados a uma aplicação:
+executaveis, cfgs, biliotecas, manuais, etc, além de informações
+sobre dependências
+
+Os gerenciadores de pacotes mantém uma base de dados relacionando 
+todos os pacotes, seus arquivos e dependências
+
+#######
+DPKG
+
+Visualizar os pacotes instalados 'dpkg -l' ou dkpg --get-selections
+'dpkg -l <nome do pacote>' mostra os detalhes do pacote
+
+Para ver quais arquivos estão dentro do pacote: 'dpkg -I <nomepacote>'
+ou 'dpkg --contents <nomepacote>'
+
+Para instalar 'dpkg -i <nomepacote>'
+Para listar os arquivos que o pacote instalou: 'dpkg -L <nomepacote>'
+Status do pacote 'dkpg -s  <nomepacote>'
+Para saber a origem o arquivo: 'dkpg -s <caminho>'
+Para remover um pacote:
+  'dpkg -r <nomepacote>'
+  mantem informações sobre o pacote
+  'dpkg -P <nomepacote>' ou 'dpkg --purge <nomepacote>
+  para remover por inteiro
+
+
+91. 102.4 Gerenciamento de pacotes Debian==============================
+== apt-cache e apt-get=================================================
+
+Arquivo de configuração do apt
+  /etc/apt/sources.list
+
+O apt-cache mostra as informações que o apt tem em sua base
+  'apt-cache depends <nomepacote>' mostra as dependencias do pacote
+
+O apt-get obtem pacotes com base no seus source.list
+  'apt-get update' busca atualizações sobre novos pacotes
+  'apt-get upgrade' baixa as versões mais novas de tudo que está
+    instalado
+  'apt-get dist-upgrade' busca atualizações de todos os programa e 
+    instala tudo, verificando se há algum tipo de conflito com as
+    versões mais novas
+  'apt-get install <nomepacote>' instala o pacote
+  'apt-get remove <nomepacote>' ou 'apt-get purge <nomepacote>'
+  'apt-get check' verifica a base de dados dos pacotes procurando
+    por inconsistências
+  'apt-get clean' remove arquivos temporário do banco de dados
+  'apt-get -d install <nomepacote>' ou --download-olny
+    o pacote baixado ficará em /var/cache/apt/archives
+
+
+92. 102.4 Gerenciamento de pacotes Debian==============================
+== dpkg-reconfigure, dselect===========================================
+
+'dpkg-reconfigure' para pacotes que requerem que o usuario selecione
+algumas configurações especificas, serve para refazer configurações
+como time-zone, teclado
+  'dpkg-reconfigure tzdata' time zone
+  'dpkg-reconfigure keybord-configuration' reconfigura o teclado
+    
+'dselect' apt-get com menu
+
+'alien' converte programas com um tipo de pacote para outro
+
+
+94. 102.4 Gerenciamento de pacotes Debian==============================
+== apt=================================================================
+
+apt reunie as opções do apt-cache e apt-get
+  apt list <pacoteprocurado> - busca pacotes com base no nome informado
+  apt search <pacoteprocurado> - busca pacotes que a descricao tenha o
+    parametro informado
+  apt show <pacote> - mostra os detalhes, mesmo que não instalado
+
+
+96. 102.5 Gerenciamento de pacotes RPM e YUM===========================
+== Comando rpm=========================================================
+!!! O rpm não resolve dependências
+rpm é equivalente ao deb e ele trabalha em módulos, temos 3 modulos 
+principais:
+  consulta: 
+    -q de query
+    -qa <pacote> mostra as informacoes do pacote instalado
+    -ql <pacote> lista os arquivos que pertence a essa instalação
+    -qc <pacote> lista os arquivos de configuração
+    -qd <pacote> arquivos de documentação
+    -qf <caminho> mostra a aplicação que instalou o arquivo
+    -qlp <pacote.rpm> lista os arquivos que estão dentro do pacote
+    -qR <pacote> verifica as dependências
+  instalação:
+    -i de instalação; -U para fazer update
+    -ivh  verbose, hash de progresso
+    --nodeps não verifica as dependências
+    --test testa a instalação, mas sem instalar
+  desistalação:
+    -e de erase
+    -vh verbose, hash de progresso
+    --nodeps remove, mesmo que outros pacotes dependam dele
+    --test testa a desistalação
+  checagem:
+    -V verify
+    -V --all
+    --checksig verifica se o pacote está integro
+
+98. 102.5 Gerenciamento de pacotes RPM e YUM===========================
+== yum, rpm2cpio=======================================================
+
+yum é equivalente ao apt-get
+Arquivo de configuração /etc/yum.conf
+Os arquivos de fontes de pacotes /etc/yum.repos.d
+
+Opções do yum:
+  check -  validação na base de dados do rpm
+  install -  instalação de pacotes
+    --downloadonly <pacote>  --downloaddir=<diretorio>
+      baixa os pacotes e suas dependencias e coloca no diretorio
+      especificado
+  update - atualiza todos os pacotes
+  upgrade - remove pacotes obsoletos
+  check-update - verifica os pacotes que estão desatualizados
+  list - lista todos os pacotes e versões instaladas e sua origem
+  search <pesquisa> - mosta os pacotes relacionados a pesquisa
+
+rpm2cpio extrai um .rpm para cpio
+  'rpm2cpio pacote.rpm > nomepacote.cpio'
+
+
+100. 102.5 Gerenciamento de pacotes RPM e YUM===========================
+== DNF (Noções)========================================================
+
+O Fedora utiliza o DNF no lugar do yum. O DNF veio de um fork do yum.
+Foi criado para melhorar o desempenho e no quesito de dependências
+Os comandos do 'dnf' são os mesmo do yum
+
+
+101. 102.5 Gerenciamento de pacotes RPM e YUM===========================
+== zypper (SUSE)========================================================
+
+zypper equivalente ao yum
+Arquivo de configuração /etc/zypp/repos.d/
+
+
+103. 102.6 Linux e Virtualização========================================
+========================================================================
+
+Verificar se estamos em uma maquina real ou virtualizada:
+  cat /proc/cpuinfo | grep hypervisor ; se não exibir nada é que
+    estamos em uma máquina real
+  dmesg | grep Hypervisor
+  virt-what
+  dmidecode -t system
+  lshw -class system
+  hostnamectl status
+  systemd-detect-virt

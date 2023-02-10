@@ -1,0 +1,346 @@
+TOPICO 110: SEGURANÇA==================================================
+=======================================================================
+231. 110.1 Realizar tarefas de Segurança do Sistema====================
+== su e sudo===========================================================
+
+O comando 'su' (switch user) serve para trocar de usuário
+
+A diferença entre usar 'su' e 'su -' é que ao usar 'su' ele não executa
+o /etc/profile e o /profile são iniciando as variáveis definidas para 
+o usuário ao utlizar o 'su -' funciona como um novo login
+
+O comando 'su -C <comando qualquer>' permite executar o comando como 
+usuário root
+
+O comando 'sudo' permite que executamos um comando sem ter a senha 
+do root, pedindo então a senha do usuário atual, mas requer que o 
+usuário tenha permissão igual ao do root configurado no arquivo sudoers
+
+O arquivo de configuração dos sudoers fica em /etc/sudoers
+Os "%" no arquivo indicam um grupo
+  ALL=(ALL) ALL
+  1° em qualquer terminal
+  2° quais user ele pode assumir
+  3° quais comandos ele pode executar
+
+Podemos criar um alias para comandos fazendo:
+  Cmnd_Alias TESTE = /sbin/fdisk, /sbin/parted
+  lpi2 ALL=TESTE
+
+Podemos editar o usando o comando 'visudo'
+
+232. 110.1 Realizar tarefas de Segurança do Sistema====================
+== who, w, last, lastb, lastlog========================================
+
+O comando 'who' mostra os usuários logados naquele momento
+  -a exibe mais detalhes. LOGIN informa que o terminal não está em uso
+
+O comando 'w' mostra os usuários logados e o que eles estão fazendo 
+no momento. JCPU mostra quanto de tempo de CPU no geral e PCPU o tempo
+de uso do processo atual
+
+O comando 'last' mostra o histórico de login da máquina
+  As informações são obtidas pelos arquivos:
+    /var/log/wtmp (para todos os logins) e 
+    /var/log/btmp (para os logins bloqueados)
+  -f <nome do arquivo wtmp ou btmp> consulta arquivos antigos
+O comando 'lastb' mostra as tentativas de login dos usuários
+  
+O comando 'lastlog' busca no /etc/passwd e mostra quando o usuário fez
+login pela ultima vez
+
+233. 110.1 Realizar tarefas de Segurança do Sistema====================
+== passwd, usermod e chage=============================================
+
+O comando 'passwd' permite trocar a senha do usuário
+  -S mostra o status do usuário
+  -x define por quanto tempo uma senha será válida
+  -n define o minimo de dias que o usuário pode trocar a senha
+  -w quanto tempo antes da data da expiração que o usuário será avisado
+  -i toleranca em manter a conta ativa apos a espiração da senha
+  -l bloqueia o usuário
+  -u desbloquei a o usuário
+
+O comando 'usermod' modifica algumas propriedades do usuário 
+  -L para bloquear o usuário
+  -U para desbloquear o usuário
+  -e data de expiração da conta
+  -f data de initividade da conta
+
+
+234. 110.1 Realizar tarefas de Segurança do Sistema====================
+== find, ulimit, limits.conf===========================================
+
+'s' nas informações de permissão do arquivo significa SUID e que 
+qualquer usuário pode utilizar aquele comando
+
+Utiliazando o 'find' para encontrar os aquivos com permissão "s"
+Ex:
+  find / \( -perm -2000 -o -perm -4000 \) -ls
+    -4000 para procurar pelo SUID
+    -2000 para procurar pelo SGUID
+    -o de OR
+    -ls para listar
+
+Utilizando o 'find' para encontrar arquivos que não há usuários 
+associados a ele
+Ex:
+  find / -path /proc -prune -o -nouser
+    -path /proc -prune é para não ser feita a busca no diretorio /proc
+    -nouser para os que tiverem sem usuário
+    -group para os que tiverem sem grupo
+
+O comando 'ulimit' permite configurar limites de recurso por usuário
+os limites configurados não ficarão fixos, tendo efeito somente na
+sessão atual do usuário
+  -a para exibir os limites configurados
+  -u exibe a quantidade maxima de processos permitidos
+  -H para definir um limite Hard, o máximo de processos
+  -S para definir um limite Soft, o minimo de processos
+
+O arquivo /etc/security/limits.conf permite configurar permanentemente
+os limites de recursos por usuário. A definição funciona da seguinte 
+forma:
+#<domain>       <type>    <item>    <value>
+
+domain - para quem essa regra será aplicada
+type - soft ou hard
+item - qual item que vamos limitar
+value - valor
+
+
+235. 110.1 Realizar tarefas de Segurança do Sistema====================
+== netstat, nmap, lsof, fuser==========================================
+
+O comando 'netstat' exibe as conexões ativas
+
+O comando 'lsof' lista os arquivos abertos e uma conexão é também 
+considerada um arquivo aberto, mostando também todas as bibliotecas
+que os programas estão utilizando
+  -i exibe somente as conexões de redes abertas
+  : para especificar uma porta
+
+O comando 'nmap' escaneia as portas buscando quais estão abertas
+  localhost para buscar na máquina local
+  <IP addres> para uma maquina especifica
+  <IP addres/mask> para uma rede inteira
+  -O para buscar qual os sistema operacional
+
+O comando 'fuser' permite buscar qual processo está a utilizar 
+determinada porta
+  -u para exibir o usuario dono do processo
+  -v para exibir maiores detalhes
+
+
+237. 110.2 Configurar Seguranca do Host================================
+== shadow, nologin e como desabilitar serviços=========================
+
+Se criarmos o arquivo /etc/nologin somente o root consigirá fazer login
+
+Desabilitando serviços:
+Ex:
+  systemctl disable <nome-do-servico>
+
+Se estivermos utilizando o init o systemd os arquivos /etc/inittab 
+e /etc/rc*
+Nos arquivos /etc/rc* tem os links comçando com S de start apontando
+para os processos, K para baixar
+Se não quisermos que o serviço rode podemos deletar o link ou alterar
+o nome de S para K
+Podemos também entrar no /etc/init.d e retirar a permissão de execução
+
+
+238. 110.2 Configurar Seguranca do Host================================
+== inetd e TCP Wrapper=================================================
+
+Alguns serviços mais simples são disponibilizado pelo inetd e xinetd
+O arquivo de configuração fica em /etc/inetd.conf
+  telnet    stream  tcp   nowait  telnetd   /usr/sbin/tcpd  in.telnetd
+
+1° nome do serviço
+2° tipo de conexao
+3° protocolo
+4° ???
+5° usuario dono do processo
+6° TCP Wrapper
+7° processo do programa que será protegido pelo TCP Wrapper
+
+O TCP Wrapper é uma forma em que o Linux coloca um processo dentro do 
+outro, o processo protege o processo do programa, conexão e serviço.
+Os elementos de segurança são referentes aos arquivos /etc/hosts.allow
+e /etc/hosts.deny que definem quais maquinas pode ou não usar os 
+servicos protegidos pelo TCP Wrapper
+O TCP Wrapper consulta primeiro o hosts.allow e depois hosts.deny
+
+O xinetd ainda utiliza o TCP Wrapper. Os arquivos de configuração são:
+/etc/xinetd.conf e /etc/xinetd.d
+Podemos desablitar, bloquear ou liberar acesso ao processo alterando
+nos aquivos presente em /etc/xinetd.d
+As regras encontradas no TCP Wrapper tem prioridade sobre as do xinetd
+
+
+241. 110.2 Configurar Seguranca do Host================================
+== Systemd Socket======================================================
+
+O systemd socket permite que dois processo comuniquem entre si, entre
+duas máquinas remotas
+
+O comando 'systemct list-units --type=socket' mostra os sockets ativos
+no momento
+Em /lib/systemd/system/*.socket contem os sockets do systemd
+Os serviços que esses sockets chamam tem o nome como <servico>@.service
+Ao ativarmos um socket com 'systemctl start <servico>.socket' o systemd
+quem passa a ouvir as conexões, mas as conexões quando estabelecidas
+serão estabelecidas pelo proprio servico
+
+243. 110.3 Protegendo daddos com Encriptação===========================
+== Conceitos de criptografia e SSH=====================================
+
+A criptografia permite enviar os dados de maneira segura
+Tem como objetivos:
+  Autenticidade (do remetente)
+  Confidencialidade (da mensagem)
+  Integridade (da mensagem)
+  Irretratabilidade (do remetente)
+
+o SSH (Secure Shell) é um protocolo de criptografia de rede
+Cria um canal seguro de comunição entre 2 hosts, cliente-servidor
+Utiliza chaves assimétricas, ou seja, um conjunto de chaves públicas e
+privadas
+
+Os arquivos de configuração do SSH cliente ficam em /etc/ssh/ssh_config
+
+Instalando o servidor ssh: 'apt-get install openssh-server'
+Os arquivos de configuração do servidor SSH estão /etc/ssh/sshd_config
+As chaves publicas e privadas estão no diretorio /home/usuario/.ssh
+  A chave privada tem permissão 600 e as publicas 611
+
+#######
+Conexão SSH
+
+###
+Realizando uma conexão ssh utilizando senha:
+  ssh <nome-usuario-destino>@<IP-host-remoto>
+  ssh -l <nome-usuario-destino> <IP-host-remoto>
+    Se não especificarmos o nome de usuário de destino, o ssh irá 
+    utilizar o mesmo nome do usuário que estamos locamente
+
+No diretório home temos um diretorio ".ssh" e um arquivo known_hosts
+que contem as chaves publicas. Se a maquina que estamos tentando 
+conectar mudar a sua chave publica termos problemas e será necessário
+editar esse aquivo e remover a chave manualmente
+
+###
+Conexão ssh utilizando chaves:
+
+Temos que gerar as chaves do ssh fazendo:
+ 'ssh-keygen -t rsa -b 1024'
+   -t indicar o algoritmo cripográfico
+   -b quantidade de bits da chave
+  Podemos mudar o nome do arquivo, uma senha para chave
+
+Temos que enviar achave publica para o servidor, para isso:
+  Criamos um diretorio ".ssh" na home do usuário que iremos utlizar 
+  no servidor e criar um arquivo chamado "authorized_keys"que conterá
+  a chave publica do cliente ssh com permissão 600 alterando o dono 
+  para o usuario que iremos utilizar fazendo chowh <usuario>:<usuario>
+  
+  Para se conectar utiliznado chaves sem senha basta digitar:
+    'ssh <usuario>@<IP-host-remoto>'
+  
+  Para se conectar utilizando chaves com senha temos que:
+    'ssh-add' para a primeira conexão e digitar a senha para a chave
+      -D limpa as senhas digitas
+    'ssh <usuario>@<IP-host-remoto>'
+
+
+246. 110.3 Protegendo daddos com Encriptação===========================
+== Tunel SSH e SCP=====================================================
+
+Para criarmos um tunel SSH fazemos no cliente
+  'ssh -N -f -L 
+  <porta-utilizada-no-cliente>:<IP-do-servidor>:<porta-do-servidor>
+  <usuario>@<IP-do-servidor>'
+    -N para não executar nenhum comando
+    -f para executar no fundo
+    -L para especificar a porta do cliente, ip e porta do servidor
+  
+  A partir disso já temos um tunel ssh aberto
+  Podemos por exemplo conectar via telnel usando o tunel aberto
+  'telnet localhost 2323'
+
+Executar alguma aplicação gráfica do servidor na maquina cliente
+Ex:
+  'ssh -X <usuario>@<IP-do-servidor> "nome-da-aplicacao"
+    -X para encaminhamento da interface grafica X11 do gnome
+
+Exceutar uma series de comandos remotamente em um servidor
+Ex:
+  'ssh <usuario>@<IP-do-servidor> "comando ; comando"
+
+O SCP permite enviar e receber arquivos via ssh
+Para enviar:
+  'scp <arquivo> <usuario>@<IP-do-servidor>:<diretorio-de-destino>'
+  Ex:
+    scp arq.txt paulo@10.199.1.2:/tmp
+
+Para receber:
+  'scp <usuario>@<IP-do-servidor>:<arquivo> <diretorio-de-destino>'
+  Ex:
+    scp paulo@10.199.1.2:/var /home/paulo/documentos
+
+
+247. 110.3 Protegendo daddos com Encriptação===========================
+== GPG=================================================================
+
+GPG - GNU PRIVACY GUARD
+Utilizado para criptografar arquivos, e-mails, assinar arquivos e email
+e transmitir de forma segura
+O GPG é uma implementação GNU do PGP
+
+Gerando chaves publicas e privadas:
+  'gpg --gen-key'
+
+Vizualizando as chaves geradas:
+  'gpg --list-keys'
+  As chaves ficam /home/usuario/.gnupg usando a extensão de arquivo
+  .kbx e .gpg
+
+Exportando a chave publica:
+  'gpg --export "<nome-do-dono-da-chave>" > chave.pub'
+  'gpg --output chave.pub --export "<nome-do-dono-da-chave>"'
+    usando a opção --armor ele exportará no formato ASCII
+    
+    usamos --keyserver <servidor> --send-keys <ID-da-chave>
+    para enviar o envio da chave publica
+
+    usamos --keyserver <servidor> --gen-revoke <ID-da-chave>
+    para revogar a chave enviada para o servidor de chaves
+
+Importando uma chavee publica:
+  'gpg --import <nome-do-arquivo>' usando arquivo
+  'gpg --keyserver <servidor> --recv-keys <ID-da-chave>'
+
+
+Criptografando um arquivo:
+  'gpg --recipient "<quem-vai-receber-a-mensagem> 
+  --output arquivo-criptografado.gpg
+  --encrypt arquivo-a-ser-criptografado.out'
+
+Descriptografando um arquivo:
+  'gpg --output arquivo-descriptografado.txt
+  --decrypt arquivo-criptografado.gpg'
+
+Assinando um arquivo:
+  'gpg --sign arquivo-para-ser-assinado.txt'
+
+Verificando um arquivo assinado:
+  'gpg --verify <nome-do-arquivo>.gpg'
+
+249. 110.3 Protegendo daddos com Encriptação===========================
+== gpg-agent===========================================================
+
+O gpg-agent é o deamon do gpg que armazena as chaves privadas em 
+memoria
+
+A variavel de ambiente GPG_AGENT_INFO indica um arquivo de socket

@@ -1,0 +1,241 @@
+TOPICO 107: TAREFAS ADMINISTRATIVAS====================================
+=======================================================================
+173. 107.1 Gerenciamento de usuários e Grupos==========================
+== Arquivos passwd, shadow, group======================================
+
+Arquivo que faz o registro de usuários e grupos de usuários:
+  /etc/passwd
+  Cada atributo está separado por ':', 
+  1° Nome do usuário,  2° originalmente para armazenar a senha, 
+  3° User ID, 4° Group ID, 5° Descrição, 6° Diretoriro principal 
+  do usuário, 7° Shell padrão do usuário
+
+Os usuários que não fazem login tem o 7° campo definido com 
+  /bin/false ou /usr/sbin/nologin
+Os usuários podem ter o mesmo ID!!!
+
+Arquivo com as senhas dos usuários:
+  /etc/shadow
+  Cada atributo está também separado por ':'
+  1° Nome do usuário, 2° Hash da senha do usuário, 3° Quando a conta
+  irá expirar, 4° Numero minimo de dias para trocar a senha,
+  5° Numero maximo de dias antes da senha expirar, 7° Quantos dias 
+  antes de enviar uma notificação da troca de senha, 8° Numero de 
+  dias após a expiração da senha em que ela continuará válida
+  9° Data que a conta expirou. 
+    O numero é a quantidade de dias passados desde 1-1-1970
+
+Arquivo com os grupos:
+  /etc/group
+  1° Nome do grupo, 2° Senha do grupo, 3° ID do grupo, 
+  4° Usuários do grupo
+
+Arquivo com as senhas do grupo:
+  /etc/gshadow
+
+Arquivo /etc/login.defs contém as definições de controle do login
+  O parâemtro CREATE_HOME faz com que a cada vez que um usuário for
+  adicionado o sistema crie a /home do usuário
+
+
+174. 107.1 Gerenciamento de usuários e Grupos==========================
+== useradd, userdel, usermod, passwd===================================
+
+'useadd' para adicionar um usuário
+  -c comentário
+  -s para definir o shell
+  -g grupo padrão
+  -G grupos adicionais
+  -m para criar a home
+  -p para adicionar a senha, requer que seja o hash da senha
+  Ex:
+    useradd -c <comentario> -m -s /bin/bash <nome do usuário>
+
+'userdel' para apagar um usuário
+  Ao usarmos o userdel o usuário não tem a sua /home apagada
+  -r apaga o diretório padrão do usuário
+
+'usermod' permite modificar o usuário, possui opções semelhantes a da
+criação do usuário
+  -g para alterar o grupo padrão
+  -G para adicionar outros grupos, porém exclui dos grupos anteriores
+  -a para adicionar um usuario a um grupo
+
+'passwd <nome do usuario>' para definir a senha do usuário
+
+'adduser' é um script de algumas distribuições
+
+175. 107.1 Gerenciamento de usuários e Grupos==========================
+== groupadd, groupdel, groupmod========================================
+
+'groupadd' para criar um grupo
+  -g para definir o ID
+
+'groupdel' para excluir um grupo
+
+'groupmod' para modificar o grupo
+  -n para trocar o nome
+ 
+'newgrp' faz o usuário assumir um novo grupo no qual ele faz parte
+
+'gpasswd' para definir uma senha para o grupo
+
+
+176. 107.1 Gerenciamento de usuários e Grupos==========================
+== id, groups, getent e chage==========================================
+
+'id' exibe o id, gid, groups a qual o usuário pertence
+
+'groups' lista os grupos a qual o usuário faz parte
+
+'getent <informações> <usuario>' obtem informação sobre o usuário
+
+'chage' mostra as propriedades do usuário
+  -l lista todas as propriedades
+  -d para forjar a data da alteração da senha, -d0 para forçar a troca
+    de senha no proximo login. Data no formato de ANO-MES-DIA
+  -E configurar a expiracao da conta. -1 para never
+
+179. 107.2 Agendamento de tarefas no Linux=============================
+== O processo cron e os agendamentos do sistema========================
+
+A cron é um Daemon
+  Habilitar o cron:
+    'systemctl enable cron'
+  Ativar o cron
+    'systemctl start cron'
+
+Configurações para fazer os agendamentos no cron
+  /etc/crontab
+  Sintaxe dos agendamentos:
+    /15 6 1,10,20,30 * 1-5 root cd /etc
+    1° Minuto que o comando vai ser executado
+    2° Hora que o comando vai ser executado
+    3° Dia do mês
+    4° Mes do ano
+    5° Dia da semana, 0 e 7 é domingo, 1 segunda e 6 sabado
+    8° Usuário que irá executar o comando
+    9° O comando
+      !!! usando uma '/' temos que a cada tanto tempo execute
+  
+  No cron.d temos os agendamentos
+
+180. 107.2 Agendamento de tarefas no Linux=============================
+== O comando crontab e Arquivos de controle============================
+
+Cada usuário tem os agendamentos individuiais
+  'crontab'
+    -l ver os proprios agendamentos
+    -u para especificar o usuario
+    -e editar agendamentos
+    -r para apagar a crontab
+    crontab -u <usuario> <nome do arquivo> 
+      para importar uma crontab de um arquivo
+
+A crontab do usuário fica gravada em /var/spool/cron/crontabs ou em
+  /var/spool/cron/tabs
+
+Determinar quem pode ou não ter uma crontab
+  /etc/cron.allow e /etc/cron.deny 
+  o allow tem prioridade sobreo deny
+  !!! Nas distribuições Debian se não houver os arquivos allow e deny
+  a cron é liberada para todos os usuários
+  !!! Nas distribuições RedHat se não houver os arquivos allow e deny
+  a cron é bloqueada para todos os usuários, execto para o o root
+
+182. 107.2 Agendamento de tarefas no Linux=============================
+== O comando at========================================================
+
+O 'at' permite agendar uma execução apenas uma vez, em tal hora ou dia
+  Ex:
+    at now +2hour
+      echo "Hora do café"
+      CTRL + D
+  Ex:
+    at 02:20pm 05202023
+      echo ok!
+
+  Conferindo os jobs: 'atq'
+  Removendo os jobs: 'atrm <ID do Job>'
+  Permitir ou negar acesso ao at
+    /etc/at.allow e /etc/at.deny
+
+
+183. 107.2 Agendamento de tarefas no Linux=============================
+== systemd timer=======================================================
+
+'systemctl list-timers' mostra as execuções programadas
+UNIT - O timer
+ACTIVATES - O servico
+
+man systemd.timer
+man systemd.time
+/lib/systemd/system/apt-daly-upgrade.timer
+[Timer]
+Ex:
+  OnCalendar=Mon..Fri 2023-05-12 6..18:00,30:Segundos
+  !!! No dia 12/05/23 6 as 18hs a cada 30min sendo segunda a sexta
+  RandomizedDelaySec=60 
+  Persisten=true
+  !!! Se rodar manualmente será registrado
+  !!! Para termos um horario preciso utilizamo so AccuracySec
+
+/lib/systemd/system/apt-daly-upgrade.service
+
+Para adicionarmos um agendamento criamos em /etc/systemd/system:
+  <nome do agendamento>.service
+  <nome do agendamento>.timer
+  configuramos, ativamos e reiniciamos o timer
+    'systemctl start <nome do agendamento>.service'
+    'systemctl daemon-reload'
+
+Temos o 'systemd-rum' que é semelhante ao 'at'
+Ex:
+  systemd-run --on-active="10h 30m" --time-property=AccuracySec=1ms
+  /bin/touch /tmp/exemplo-run.txt
+
+
+185. 107.3 Localização e Internalização================================
+== Configuracao de horario e fuso======================================
+
+O Linux sempre grava em formato UTC e para o usuário ele converte para
+o usuário atual
+'timedatectl'
+
+Arquivo de configuração /etc/localtime e /etc/timezone
+Arquivo com os fusos /usr/share/zoneinfo
+
+'tzselect' para escolher um timezone, no final da escolha será mostrado
+o nome do time zone
+
+Podemos usar a variável TZ para configurar um timezone para a nossa
+seção atual
+Ex:
+  export TZ=America/Chicago
+  unset TZ 
+
+Configurando pelo localtime
+Ex:
+  ln -s /usr/share/zoneinfo/Asia/Bangkok /etc/localtime
+
+
+186. 107.3 Localização e Internalização================================
+== Idioma, Linguagem e Codificação=====================================
+
+'locale' mostra as configurações de linguagem e a codificação
+pt_BR.UTF-8
+pt - Definicao do idioma
+BR - Pais
+UTF-8 - Codificacao
+
+A variável LC_ALL sobrepõe todas as outras
+
+colocando a variável de ambiente LANG=C faz com que os scripts não 
+tenham o seu funcionamento alterado devido a configurações de 
+localidade configuradas na máquina
+
+Converter arquivos de um tipo de codificação de caracteres para outro
+tipo
+Ex:
+  iconv -f <formato atual> <formato que queremos> <nome do arquivo>
+

@@ -1,0 +1,459 @@
+TOPICO 104: Dispoitivos, sistemas de arquivo Linux e FHS===============
+=======================================================================
+109. 104.1 Criando Partições e Sistemas de Arquivos====================
+== fdisk===============================================================
+
+O comando 'fdisk' é utilizado para criar partições excluir partições
+  <nome-do-disco> entra no utilitador do fdisk configuração do disco
+  n para criar uma nova partição
+  l lista o tipo de partições conhecidas
+  p para exibir a tabela de particoes
+  t muda o tipo de particao
+  g para utilizar o GPT, pois o padrão do fdisk é o MBR
+
+
+110. 104.1 Criando Partições e Sistemas de Arquivos====================
+== gdisk===============================================================
+
+O comando 'gdisk' é similar ao 'fdisk' mas só trabalha com GPT
+
+
+111. 104.1 Criando Partições e Sistemas de Arquivos====================
+== Tipo FS, mkfs, mkswap===============================================
+
+Journal - O Jornal é uma habilidade que o file system tem de gravar um
+log das operções que estão sendo feitas no disco. Esse log auxilia 
+quando há falhas abrupta do sistema
+
+O comando 'mkfs' é usado para definir o file system das partições
+Ex:
+  'mkfs -t ext4 /dev/sdb1'
+  'mkfs.ext4 /dev/sdb2'
+  'mkswap /dev/sdb5' para formatar partiçoes do tipo swap
+    'swap /dev/sdb5' para incluir a particao como swap
+
+'file -s /dev/sdb1' exibe o file system que a partição está formatada
+
+
+112. 104.1 Criando Partições e Sistemas de Arquivos====================
+== parted, gparted=====================================================
+
+O comando 'parted' é similar ao fdisk, com adicional de permiter o
+  redimensionamento de partições
+  'parted <nome-do-disco>'
+  resizepart <numero-da-particao> <novo-final-da-partição> redimensiona
+
+O comando 'gparted' é o 'parted' com o modo gráfico
+
+
+113. 104.1 Criando Partições e Sistemas de Arquivos====================
+== btrfs===============================================================
+
+Btrfs - B-tree File System
+Foca em tolerância a falhas e facilidade de administração e reparo 
+Recursos:
+  Implementação de RAID dentro do file system, suportando RAID 0,1,10
+  SubVolumes: Estrutura dentro de uma partição/volume; pode ser montado
+    separadamente
+  Compressão transparente: ompressão pode ser feita diretamente no FS;
+    Algoritmos zlib, LZO, ZSTD
+  Snapshot
+  Conversão de ext3 para btrfs
+
+
+114. 104.1 Criando Partições e Sistemas de Arquivos====================
+== exFAT===============================================================
+
+exFAT = Extended FAT ou FAT64
+Sistema de arquivos otimizado para pen drives/flash drives
+É intermediário entre o FAT e o NTFS
+O limite de tamanho é de 16EB Exabyte
+Para usa-lo é necessário instalar os pacotes exfat-fuse e exfat-utils
+
+
+116. 104.2 Mantendo a integridade de FSs===============================
+== df e du=============================================================
+
+O comando 'df' lista as partições existentes
+  -h tras uma saida mais legivel
+  -a lista todos os tipos de partições que o sistema cria
+  -T exibe as partiçoes com o seu tipo de File System
+  -t especifica o tipo FS de partição a ser exibida
+  -i exibe os informações sobre o inode
+
+Inode é um indice de cada arquivo do Linux. É possivel que o sistema 
+  conste como sem espaço disponível quando a quantidade de inodes 
+  disponiveis acaba
+
+O comando 'du' mostra quais arquivos estão ocupando espaço
+  -a exibe tudo, incluido também os aquivos
+  -h mostra de maneira mais legivel
+  -c sumariza o total
+  -s sumariza o resultado
+  *  para ver cada um dos diretórios
+  --mx-depth define a quantidade de niveis que será verificado
+
+  
+118. 104.2 Mantendo a integridade de FSs===============================
+== fsck, tune2fs=======================================================
+
+O comando 'fsck' é usado para analisar a particao e fazer correções
+  O comando 'fsck' só funciona se a partição não estiver montada ou 
+    estiver como somente leitura
+  Ex:
+   'fsck /dev/sda1'
+
+O comando 'tune2fs' é usado para fazer ajustes nas partições
+  -L define um label para a partição
+  -l <particao> para exibir os detalhes da partição
+  -i para alterar o tempo de checagem 'fsck' no disco
+  -c para alterar o numero de montagens antes de fazer uma checagem
+  -m para alterar o tamanho de espaco reservado do disco
+  -j habilita o journal que não tem o journal
+
+Ex:
+  'tune2fs -L "minhaparticao" /dev/sda1'
+  'tune2fs -c 30 /dev/sda1'
+
+O comando 'xfs_admin' é semelhante ao 'tune2fs' porem usado para 
+  partições XFS
+  
+
+119. 104.2 Mantendo a integridade de FSs===============================
+== XFS=================================================================
+
+O comando 'xfs_info' tras informações sobre a partição
+
+O comando 'xfs_repair' faz uma verificação da partição xfso
+Ex:
+  'xfs_repair /dev/sda1'
+
+O comando 'xfs_db' faz o debug de uma partição xfs
+  frag - exmina as fragrmentações
+
+O comando 'xfs_fsr' faz a desfragmentação de uma partição xfs
+
+
+121. 104.4 Controle de Montagem e Desmontagem de FSs===================
+== mount, unmount, /etc/fstab==========================================
+
+Utilizamos o comando 'fdisk -l' ou 'lsblk -f' para visualizar os discos
+  ainda não montados
+
+O comando 'dumpe2fs <particao> -h' exibe todos os detalhes da partição
+
+O comando 'mount' permite montar uma partição, ao utilizar sem parâme
+  tros ele exibe todas as partições e onde estão montadas. Geralmente
+  as partições são montadas ou no /media ou no /mnt. O comando só pode
+  ser utilizado pelo usuário root
+  -a monta todas as partições especificadas no /etc/fstab
+  -r monta para somente leitura
+  --bind para associar um diretorio ao outro
+  Ex:
+    'mount /dev/sdb2 /tmp/test_mount'
+    'mount --bind /opt /home/paulo/teste'
+  
+O comando 'unmount' permite desmontar uma partição
+  -a desmonta todas as partições especificadas no /etc/fstab
+  Ex:
+    'unmount /dev/sdb2'
+
+O arquivo /etc/fstab é o arquivo de configuração que é lido no proceso
+de boot quais a partições devem ser montadas, e como montar
+Configurando o fstab:
+Podemos utilizar o Filesystem UUID e o Filesystem volume name
+  <file system>   <mount point>   <type>  <options>   <dump>  <pass>
+        1°              2°          3°        4°        5°      6°
+
+1° - Nome da partição, UUID ou o Label
+2° - Diretorio onde queremos montar
+3° - Tipo da partição que será montada ou colocamos auto
+4° - Opções: definir quem vai ser o dono, se a partição e somente 
+       leitura, somente quem montou a partição pode ou não desmontar
+       geramente utilizamos o "defaults". "users" para permitir que
+       qualquer usuario consiga montar e desmontar, "user" para que 
+       que todos os usuario consigam montar, porém somtente aquele 
+       que montou a partição consiga desmontar. Tanto para "user" ou
+       "users" requer que o usuário root tenha configurado no fstab o
+       ponto de montagem. Ao fazer 'mount /mnt/teste1' a partição sera
+       montada por qualquer usuário desde que previamente configurada
+       no fstab pelo root
+5° - Era uma aplicação para fazer backup ao iniciar a máquina
+6° - Checagem do filesystem ao bootar a maquina, 0 para desabilitado
+       ou colocamos o numero da ordem para fazer o 'fsck'
+
+
+123. 104.4 Controle de Montagem e Desmontagem de FSs===================
+== lsblk, blkid, systemd===============================================
+
+O comando 'blkid' trás todas as informações da partição como: Label, 
+  UUID, tipo de File System e o PARTUUID
+
+O comando 'lsblk' mostra todos os dispositivos e suas partições, tipo
+   e o ponto de montagem
+  -f exibe o UUID e o Label
+
+Outra forma de definir os pontos de montagem é utilizando o 'systemd'
+criamos um arquivo <dir>-<dir>.mount
+  Ex: "mnt-montagem.mount" para montar em /mnt/montagem
+Criando o arquivo:
+  [Unit]
+  Description=Ponto de Montagem Teste
+
+  [Mount]
+  What=/dev/sdb1
+  Where=/mnt/montagem
+  Type=xfs
+  Options=defaults
+
+  [Install]
+  WantedBy=multi-user.target
+
+Temos que dar um start:
+  'systemctl start mnt-montagem.mount'
+Para habilitar para que toda vez seja montado automaticamente:
+  'systemctl enable mnt-montagem.mount'
+
+
+126. 104.5 Gerenciando Permissões e Propriedades de Arquivos===========
+== chmod===============================================================
+
+Todo arquivo ou diretorio no Linux é associado ao um usuário e um grupo
+O conjunto de 12 bits define as permissões de acesso
+  ----------
+  - --- --- ---
+  O primeiro caractere está associado ao tipo de arquivo
+    d - diretorio
+    l - link
+    c - caracter de dispositivo especial
+  Os três proximos caracteres é referente a permissão do usuário
+  Os três proximos as permissões do grupo
+  Os três ultimos as permissoes dos outros
+
+As permissões tem efeitos ligeiramente diferentes quando tratamos de 
+  arquivos e diretórios
+  Para arquivos: quem tem o "r" consegue ler o arquivo, "w" consegue
+    alterar e remover o arquivo, "x" permite executar
+  Para diretorios: "r" consegue listar o conteudo do diretorio,
+    "w" consegue criar e remover arquivos e diretorios dentro desse
+    diretorio, "x" permite que o usuário entre no diretorio
+
+Alteramos as permissões usando o comando 'chmod'
+  Alvo:
+    u - user
+    g - group
+    o - others
+    a - all
+  Operação:
+    + adiciona a permissão
+    - remove a permissão
+    = deixar igual a
+  Permissão:
+    r - read
+    w - write
+    x - execute
+Ex:
+  'chmod ug+x arquivo.out' deixa como -rwxrwxr--
+  'chmod o=rw arquivo.out' deixa others somente como leitura e escrita
+
+Chmod com o modo octal:
+  r = 4
+  w = 2
+  x = 1
+
+O comando 'chmod -R' é usado para colocar a mesma permissão para todos
+  os arquivos e diretorio dentro daquele diretorio
+  Ex:
+    'chmod -R diretorio1'
+
+O comando 'stat' permite visualizar as permissões de acesso
+Ex:
+  'stat <arquivo>'
+
+128. 104.5 Gerenciando Permissões e Propriedades de Arquivos===========
+== SUID, SGUID, Stick==================================================
+
+Um script é executado seguindo as permissões do usuário que está execu
+  tando um script e não com as permissões do dono do script
+
+O SUID permite o script rode com as permissões de quem criou o script
+
+O "s" na permissão do arquivo no lugar do "x" indica que ele tem o 
+atribuito SUID. Quando o "s" está maisculo não temos o "x".
+Para permitir que um script tenha o atribuito SUID damos um 'chmod' no
+usuário:
+Ex:
+  'chmod u+s Script_Exemplo.sh'
+A partir de então o script será executado usando as permissões do dono
+
+O SGUID é semelhante ao SUID mas para o grupo
+Ex:
+  'chmod g+s Script_Exemplo.sh'
+
+Ao atribuirmos um SGUID no diretório, todos as aquivos criado naquele
+  diretorio será atribuido para aquele grupo dono do diretorio
+
+O 'stick' é uma propriedade que faz com que somente quem criou os
+  arquivos e diretórios consiga apaga-lo ou renomea-lo
+  o "x" do campo others será substituido pelo "t"
+Ex:
+  'chmod o+t arquivo1'
+Quando o "t" está maiusculo significa que o arquivo não tem a permissao
+  de execução, quando está minusculo siginifica quando o arquivo pode
+  ser executado
+
+- - -
+1 2 3
+
+1° SUID = 4
+2° SGUID = 2
+3° Sticky = 1
+
+'chmod 7774 arquivo1' deixa o arquivo como -rwsrwsr-t
+
+
+129. 104.5 Gerenciando Permissões e Propriedades de Arquivos===========
+== unmask, chown, chgrp================================================
+
+O comando 'umask' é uma mascara para a definição das propriedades dos
+  novos arquivo e diretorios criados
+  Ao rodarmos o comando sem nenhum parametro ele exibe a mascara
+  o valor exibido é subtraido como valor padrão
+  Ex:
+    umask = 0002; um novo arquivo criado terá permissão do dono igual
+    a 6-0=6, para o grupo igual a 6-0=6 e para outros 6-2=4 ficando
+    -rw-rw-r--
+    para um diretorio criado terá permissao do dono igual a 7-0=0, para
+    o grupo igual a 7-0=7 e para outros igual a 7-2=5 ficando 
+    -rwxrwx-r-x
+
+Altermos a mascara fazendo 'umask <nova-mascara>'
+Ex:
+  'umask 022' o umask será igual a 0022
+
+O comando 'chown' permite alterar o dono e o grupo dono do arquivo
+  -R para mudar recursivamente os arquivos e diretorios
+  'chown <novo-usuario> <arquivo/diretorio>' 1°
+  'chown <novo-usuario>:<novo-grupo> <arquivo/diretorio>' 2°
+  'chown <novo-usuario>.<novo-grupo> <arquivo/diretorio>' 3°
+  'chown :<novo-grupo> <arquivo/diretorio>' 4°
+
+  1° Alterando somente o usuario dono do arquivo
+  2° Alterando o usuario e grupo dono do arquivo
+  3° Alterando também o usurio e grupo dono arquivo
+  4° Alterando somente o grupo dono do arquivo
+
+O comando 'chgrp' permite mudar apenas o grupo dono do arquivo
+  'chgrp <novo-grupo> <arquivo>'
+
+131. 104.6 Criando e Alterando Links Hard e Soft=======================
+== ln==================================================================
+
+O numero após as permissões do arquivo indica o numero de referencias
+  que temos para esse mesmo inode. Visualizamos com o 'ls -li'
+  Os diretorios tem por padrão o nome 2 por conta do diretorio interno
+  "." criado automaticamente
+
+Link físico (Hard) - O link fisico estamos criando um outro nome que 
+  aponta para o mesmo inode. Qualquer permissão alterada no aquivo será
+  refletida também no link criado. Se apargamos o arquivo original o 
+  link ainda será mantido. O link hard só pode criado para arquivos que
+  estejam dentro da mesma partição. Não é possivel criar hard links 
+  para diretorios. Mesmo apagando o arquivo original ainda é possivel
+  acessar a informação atraves do arquivo de link criado
+
+  'ln <arquivo-origem> <nome-do-link-fisico>'
+
+
+Link simbolico (Soft) - É um arquivo que vai apontar para outro arquivo
+  usamos a opção "-s". Um link simbolico tem sempre a permissão 777.
+  O link simbolico pode apontar para arquivos que estejam em outra 
+  partição. O tamanho do link é igual ao tamanho do nome do arquivo para
+  qual ele aponta.
+  Ex:
+    Um link que aponta para '/tmp/teste.txt' terá tamanho 14
+
+  'ln -s <arquivo-origem> <nome-do-link-simbolico>'
+
+
+133. 104.7 Padrão e Comandos para Localização de Arquivos==============
+== FHS=================================================================
+
+FHS - FileSystem Hierachy Standard é o padrão de hieraquia padrão do 
+  Linux
+
+#######
+Diretorios que devem ser montados exclusivamente no "/"
+
+Diretorio     Finalidade                                Exemplo
+/bin          Programas críticos / Todos os usuários    cp, ls, kill
+/sbin         Programas criticos / SysAdmin             fdisk, fsck
+/etc          Arquivos de configuração do sistema       passwd, inittab
+/lib          Bibliotecas e Modulos Kernel
+/mnt /media   Pontos de montagem de midia               /mnt/dvd
+/proc /sys    Informações de Hardware e Processos       interrupts, cpu
+/dev          Dispositivos e Arquivos especiais         sda, sr0, tty
+
+
+#######
+Diretorios que podem ser montados fora da partição que está o "/"
+
+Diretorio     Finalidade                                Exemplo
+/root         Diretório padrão do usuário root
+/boot         Arquivos de configuração do bootloader
+              imagens de kernel e initd
+/tmp          Arquivos temporários
+/home         Diretório e arquivos dos usuários
+/var          Arquivos dinâmicos como logs, filas, etc
+/usr          Instalação de programas do Linux
+              Normalmente não criticos
+/opt          Instalações de aplicações em Geral
+
+#######
+O diretório /usr
+
+Diretorio     Finalidade                                Exemplo
+/usr/local    Arquivos que o sysadmin instala localmente
+/usr/X11R6    Arquivos referente a interface gráfica
+/usr/bin      Comandos não essenciais. Todos os usuários
+/usr/sbin     Comandos não essenciais. Sysadmin
+/usr/lib      Bibilotecas de programas
+/usr/share/man Fontes do man
+
+
+134. 104.7 Padrão e Comandos para Localização de Arquivos==============
+== locate, whereis, which==============================================
+
+O comando 'find' é o comando mais completo para buscar arquivo no Linux
+  'find <diretorio-de-busca> [parametros] <o-que-quer-buscar>'
+  -name para procurar pelo nome
+  -user para procurar pelo usuario
+  -size para procurar pelo tamanho
+  
+O comando 'locate' é baseado em um arquivo de uma database interna,
+  retornando todos os aquivos que tenha uma parte da string procurada
+  A sua base de dados é atualizada ao iniciar a maquina ou em um tempo
+  pré determinado. Para atualizamos a base de dados 'updatedb'
+  as configurações do updatedb fica em /etc/updatedb.conf
+  'locate <termo-pesquisado>'
+
+O comando 'whereis' localiza diretorios onde estarão os executaveis,
+  bibliotecas, fonte de dados e manuais. Procura somente as referencias
+  a string no inicio do nome do arquivo. Geralmente utilizado para 
+  procurar para buscar a localização dos comandos
+  'whereis <termo-pesquisado>'
+
+O comando 'which' procura somente no PATH da seção atual e mostra 
+  somente o primeiro resultado.
+
+O comando 'type' mostra o tipo de arquivo que estamos olhando
+  'type <termo-pesquisado>'
+
+
+135. 104.7 Padrão e Comandos para Localização de Arquivos==============
+== find================================================================
+
+Uso do 'find' com o 'xargs' temos que usar o "print0" do find para usar
+  o 'xargs'
+Ex:
+  'find ./ -print0 | xargs -O ls -l'
