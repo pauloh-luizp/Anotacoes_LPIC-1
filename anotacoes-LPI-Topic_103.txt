@@ -98,8 +98,8 @@ History
 
 CTRL + R - procura por um comando no histórico de comandos
 
-Quando o comando é inteno ele não tem o Manual, para eles temos que
-consultar o manual do bash
+Quando o comando é interno ele não tem o Manual, para eles temos que
+consultar o manual do bash. Usando o comando 'man bash'
 'info' é semelhante ao 'man'
 'man -k <termo pesquisado>' exibe todos os comandos que tenham o 
 termo pesquisado
@@ -111,6 +111,9 @@ termo pesquisado
 == uname, alias========================================================
 
 'uname -a' imprime as informações do sistema
+  -r mostra a versão do kernel que o sistema está usando
+  -v mostra quando esse kernel foi compilado/construido
+
 'alias' permite criar um atalho, apelido para algum comando
 Para criar um alias fazemos:
   alias lt='ls /tmp'
