@@ -22,6 +22,8 @@ Um caminho absoluto é aquele que inclui desde o diretório '/'
 Um caminho relativo é aquele que não inclui o caminho completo inici_
 ando pelo '/'.
 
+O './' indica que o arquivo que queremos executar esta nesse diretorio 
+
 13. 103.1 Trabalhando na linha de comando==============================
 == Variaveis de ambiente===============================================
 
@@ -29,7 +31,7 @@ VARIAVEL=valor
 echo $VARIAVEL
 
 Para que a variável esteja visivel é necessário exporta-la, para isso:
-export VARIAVEL. Podemo exportar a variável já na criação
+export VARIAVEL. Podemos exportar a variável já na criação
 export VARIAVEL=valor
 
 O comando 'set' exibe todas as variáveis que foram declaradas automati_
@@ -40,6 +42,8 @@ modificar a variável durante um execução especifica ex:
 env TESTE=Windows ./Script_Variavel.sh
 
 Para remover a variável usamos o 'uset'
+
+uset TESTE
 
 ########
 Variáveis pré definidas:
@@ -63,6 +67,16 @@ $! - Mostra o PID do ultimo processo executado em background
 $? - Mostra o exit code do ultimo processo executado
 
 '~' retorna o home do usuário
+'~user' retorna o home do user
+
+Podemos exibir o valor de uma variável usando a sintaxe ${VAR1}
+
+########
+
+Comando 'set' usado para verificas as variáveis e funções
+-x exibbe o comando expandido antes de executá-lo. Sendo muito últil
+  para debugs
+-a após habilitada todas as variáveis declaradas serão exportadas
 
 15. 103.1 Trabalhando na linha de comando==============================
 == Comando sequenciais, history, man===================================
