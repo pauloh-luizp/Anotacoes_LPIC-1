@@ -24,6 +24,7 @@ ando pelo '/'.
 
 O './' indica que o arquivo que queremos executar esta nesse diretorio 
 
+
 13. 103.1 Trabalhando na linha de comando==============================
 == Variaveis de ambiente===============================================
 
@@ -57,6 +58,8 @@ TERM - Mostra o terminal que fezemos login
 DISPLAY - Indica às aplicações gráfica onde as janelas deverão ser 
 exibidas
 PATH - Diretório em que o Linux irá procurar por arquivos executaveis
+  Adicionando um novo diretóiro ao PATH:
+    'export PATH="/novo/diretorio/":$PATH"
 PS1 - Aparencia do prompt do shell
 
 ########
@@ -77,6 +80,7 @@ Comando 'set' usado para verificas as variáveis e funções
 -x exibbe o comando expandido antes de executá-lo. Sendo muito últil
   para debugs
 -a após habilitada todas as variáveis declaradas serão exportadas
+
 
 15. 103.1 Trabalhando na linha de comando==============================
 == Comando sequenciais, history, man===================================
@@ -99,10 +103,11 @@ History
 CTRL + R - procura por um comando no histórico de comandos
 
 Quando o comando é interno ele não tem o Manual, para eles temos que
-consultar o manual do bash. Usando o comando 'man bash'
+  consultar o manual do bash. Usando o comando 'man bash'
+
 'info' é semelhante ao 'man'
 'man -k <termo pesquisado>' exibe todos os comandos que tenham o 
-termo pesquisado
+  termo pesquisado
 
 'whatis <nome do comando>' exibe a descrição do comando
 'apropos <termo pesquisado>' semelhante ao 'man -k'
@@ -120,16 +125,24 @@ Para criar um alias fazemos:
 
 17. 103.1 Trabalhando na linha de comando==============================
 == which===============================================================
-O comando 'which' serve para procurar arquivos que estão dentro do PATH
+O comando 'which' serve para procurar arquivos que estão dentro dos
+  diretórios inclusos na variável PATH. Localiza um comando
 Ex:
 which echo
+
 
 18. 103.1 Trabalhando na linha de comando==============================
 == Quoting=============================================================
 
+A primeira coisa que o shell faz é imterpretar as variáveis, e só 
+  depois interpreta o comando com o resultado da interpretação da
+  variáveis
+
+O * significa todos os arquivos do diretório atual
 A "" protege todos os caracteres especiais, exceto: $ ` \
 A '' protege todos os caracteres
 A \  protege somente o caracter logo a seguir
+
 
 20. 103.2 Aplicando Filtros a Textos e Arquivos========================
 == cat, tac, less, head, tail, sort, wc================================
@@ -138,36 +151,51 @@ O comando 'cat' lê um aquivo de texto
   -n enumera as linhas
   -b enumera apenas a linhas não brancas
   -s transforma mais de uma linha em branco e apenas uma
-  -a exibe os caracteres especiais, '$' para o final de linha
+  -A exibe os caracteres especiais, '$' para o final de linha
       '^I' para o TAB
 
 O comando 'tac' imprime o arquivo de trás para frente
 O comando 'head' mostra o cabeçalho do arquivo
+  -n para exibir determinado número de linhas
+  -c para exibir até tantos Bytes
 O comando 'tail' mostra as ultimas linhas do arquivo
   -f mostra o fluxo do final do arquivo, se algo for escrito ele 
     exibirá 
 
-O comando 'less' exibe o arquivo de forma paginada
+O comando 'less' exibe o arquivo de forma paginada. Ele é a evoulção
+  do comando 'more' possuindo mais opções
   o '/' permite procurar palavras
+    n - para procurar a proxima ocorrencial
+    n + shift para procurar para trás
   CTRL + G exibe o status do arquivo
 
 O comando 'wc' lê a quantidade de linhas, palavras e tamanho em bytes
+  nesta ordem. Ex: 14 24 187
   -l para quantidade de linhas
   -w para quantidade de palavras
-  -c para quantidade de Bytes
-  -m para quantidade de caracteres
+  -c ou --bytes para quantidade de Bytes
+  -m ou --chars para quantidade de caracteres
+  Com a opção '*' ele roda o comando para todos os arquivos do 
+    diretório atual
+
 
 21. 103.2 Aplicando Filtros a Textos e Arquivos========================
 == uniq, od, paste, split==============================================
 
 O comando 'nl' semelhante ao 'cat -b'
 O comando 'sort' serve para ordenar um arquivo
+  -t define o delimitador
+  -k altera o campo de preferencia para ordenamento
+  -g ordena como número ao invés de caracteres
+
 O comando 'uniq' mostra os itens unicos de um aquivo, mas é necessario
-que o arquivo esteja ordenado
+  que o arquivo esteja ordenado e não tenha linhas que separem os textos
+  como uma linha inteira em branco. Muito utilizado em conjunto com o 
+  'sort'
   -d exibe os itens duplicados
   -c faz a contagem
 
-O comando 'od' exibe o conteúdo do texto em formato octal
+O comando 'od'(octal dump) exibe o conteúdo do texto em formato octal
   -t para mudar o formato
 
 O comando 'join' combina dois aquivos através de um indice
@@ -177,8 +205,9 @@ por exemplo o numero da linha
 O comando 'paste' combina dois arquivos linha a linha
 O comando 'split' divide um arquivo em vários outros
   -l20 a cada tantas linhas ele divide o arquivo
-  -b100 a cada tanto bytes ele divide o arquivo
+  -b100 a cada tantos bytes ele divide o arquivo
   split -l20 arquivo.txt novo_arquvio_ para alterar o nome de saida
+
 
 22. 103.2 Aplicando Filtros a Textos e Arquivos========================
 == tr, cut, sed, fmt, expand, unexpand, pr=============================
@@ -187,6 +216,8 @@ O comando 'tr' faz a subistituição de texto, requer o uso do pipe ou
 pelo redirecionamento da entrada
   -d para deletar
   -s remove partes repetidas
+  Ex: 'echo "Curso de Liiiiiinux" | tr -s i'
+
 Quebra de linha:
   LF = Line Feed = Nova linha
   \n
@@ -197,15 +228,18 @@ Quebra de linha:
   Windows: CR-LF \r\n ^M
   Unix/Linux: LF \n $
 
-Converter CR-LF para LF: tr -d "\r" < ArquivoWindows,txt > NovoArquivo
+Converter CR-LF para LF. Removemos o \r: 
+  'tr -d "\r" < ArquivoWindows,txt > NovoArquivo'
 
 O comando 'cut' recorta parte de um texto, podendo usar delimitadores
+  Ex: 'cut -c-5 alunos.txt' do primeiro até o 5 caractere
   -c para caracteres
   -f para campos
   -d para trocar o delimitador
+  Ex: 'cut -d" " -f1 alunos.txt
 
 O comando 'sed' procura um conteudo e substitui ou deleta um conteudo
-colocando entre apostofro
+  colocando entre apostofro
 Ex: sed 's/Silva/Souza/g' arquivo.txt !!! para uma unica ocorrencia na
 linha. Com o uso de /g torna global
 
@@ -214,6 +248,12 @@ Ex: sed '3,5 d' alunos.txt
 
 Deletando linhas que contenha certa palavra
 Ex: sed '/Claudia/d' alunos.txt
+
+Procurando a quantidade de processadores no sistema
+Ex: sed -n /processor/p /proc/cpuinfo | sed -n '$='
+  -n para não imprimir nada exceto o que estamos procurando
+  '$=' diz para o sed encontrar uma correspondência para ultima
+    linha ($) e entãoo imprimir o número dessa linha (=)
 
 O comando 'fmt' permite formatar um aquivo especificando a altura e
 largura
@@ -226,8 +266,6 @@ O comando 'unexpand' substitui os espaço em branco por tabulações
 
 O comando 'pr' coloca o arquivo em páginas ou colunas para impressão
 
-
-
 24. 103.2 Aplicando Filtros a Textos e Arquivos========================
 == xzcat, bzcat, zcat==================================================
 
@@ -237,6 +275,7 @@ Podemos ler sem descompactar o arquivo de texto:
 'xzcat' para arquivos compactados com o algoritmo XZ
 'bzcat' para arquivos compactados com o algoritmo BZ
 'zcat'  para arquivos compactados com o algoritmo GZIP
+
 
 25. 103.2 Aplicando Filtros a Textos e Arquivos========================
 == checksum============================================================
@@ -288,7 +327,8 @@ file arquivo.txt
 'cp' -opções <origem> <destino>
   -i pergunta antes de um arquivo ser sobreescrito
   -r copia o diretório e todo o seu conteúdo
-  -p mantem as caracteristicas do arquivo, data, dono e grupo
+  -p mantem as caracteristicas do arquivo, data, dono e grupo.
+    sem a opção '-p' as caracteristicas são atualizadas
 
 'mv' recorta o arquivo, movendo para outro diretório
 'touch' criar um arquivo em branco, mudar a hora do acesso do arquivo
@@ -304,6 +344,7 @@ file arquivo.txt
 
 'rmdir' remove diretórios vazios
   -p remove toda a árvore, desde que todos os diretorios esteja vazios
+
 'mkdir' cria diretórios
   -p ou --parents para criar toda uma árvore de diretórios
 
@@ -329,7 +370,7 @@ file arquivo.txt
   j agrupa e comprime usando o bzip2 .tbz
   J agrupa e comprime usando o xz .txz
 Ex:
-  tar cpvf backup.tar novo* 
+  tar zcpvf backup.tar novo* 
   Gera um arquivo que contem todos os outros dentro
 
 'gzip' compacta os arquivos .tar
@@ -348,15 +389,17 @@ Ex:
 
 
 27. 103.3 Gerenciamento Basico de Arquivos=============================
-== tar, gzip, bzip2, xz================================================
+== cpio, dd============================================================
 
-'cpio' agrupa uma lista de arquivos utilizando o find
+'cpio' agrupa uma lista de arquivos utilizando o find. Obrigatório o
+  uso do 'find' para redirecionar a entrada para o 'cpio' e redirecio
+  namos para um outro arquivo compactado
   -o cria o arquivo
   -i desagrupa
   -d cria as subpastas necessárias
 Compactar Ex:
-  find ./ -name "novo" | cpio -o > backup.cpio
-  find ./ -name "novo" | cpio -o | gzip > backup.cpio.gz
+  find ./ -name "novo*" | cpio -o > backup.cpio
+  find ./ -name "novo*" | cpio -o | gzip > backup.cpio.gz
 Descompactar Ex:
   cpio -i < backup.cpio
   gunzip -c backup.cpio.gz | cpio -i
