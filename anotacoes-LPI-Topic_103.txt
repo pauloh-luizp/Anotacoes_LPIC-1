@@ -6,11 +6,13 @@ TOPICO 103: COMANDOS GNU E UNIX========================================
 O comando 'echo' imprime na tela o conteúdo que foi digitado em seguida
 
 Comando internos são aqueles que fazem parte do Shell, os externo são 
-aqueles que são instalados posteriormente. O comando 'type' permite
-ver se o comando é interno ou não. Quando o programa é interno aparece
-como: "'comando' is a shell builtin", 
+aqueles que são instalados posteriormente. 
+
+O comando 'type' permitever se o comando é interno ou não. 
+Quando o programa é interno aparece como: "'comando' is a shell builtin", 
 as saídas como: "'comando' is hashed 'caminho/do/comando'" 
 ou "'comando' is 'caminho/do/comando'" significa que ele é exteno.
+
 O bash sabe da localidade do comando atravez da variável de ambiente
 $PATH, ele buscará em cada um desses diretórios presentes na variável
 
@@ -77,10 +79,13 @@ Podemos exibir o valor de uma variável usando a sintaxe ${VAR1}
 ########
 
 Comando 'set' usado para verificas as variáveis e funções
--x exibbe o comando expandido antes de executá-lo. Sendo muito últil
-  para debugs
--a após habilitada todas as variáveis declaradas serão exportadas
+  -x exibbe o comando expandido antes de executá-lo. Sendo muito últil
+    para debugs
+  -a após habilitada todas as variáveis declaradas serão exportadas
 
+O comando 'declare' para declarar a variável
+  -x para já exportar durante a criação
+  declare -x VAR=Paulo
 
 15. 103.1 Trabalhando na linha de comando==============================
 == Comando sequenciais, history, man===================================
@@ -99,6 +104,7 @@ History
 '!<numero do comando na lista do history>' o comando com aquele numero
 '!<string>' executa o utlimo comando com aquele inicio de string
 'history -c' limpa o arquivo de histórico
+  -w para escrever no arquivo .bash_history sem ter que fechar a sessão
 
 CTRL + R - procura por um comando no histórico de comandos
 
@@ -229,7 +235,7 @@ Quebra de linha:
   Unix/Linux: LF \n $
 
 Converter CR-LF para LF. Removemos o \r: 
-  'tr -d "\r" < ArquivoWindows,txt > NovoArquivo'
+  'tr -d "\r" < ArquivoWindows.txt > NovoArquivo'
 
 O comando 'cut' recorta parte de um texto, podendo usar delimitadores
   Ex: 'cut -c-5 alunos.txt' do primeiro até o 5 caractere
