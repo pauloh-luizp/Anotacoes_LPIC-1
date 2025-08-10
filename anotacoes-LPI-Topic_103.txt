@@ -525,6 +525,15 @@ O comando 'pstree' mostra os processos em forma de uma árvore
 
 O comando 'pgrep' mostra os IDs dos processo filtrando pelo nome
   -u para especificar o usuário
+  Ex:
+	pgrep bash
+  Pode-se usar a opção -u ou -U especificando o nome de usuário,
+  quanto o seu código númerico
+  Ex:
+	pgrep -u paulo
+	pgrep -u 1000
+	pgrep -U root
+	pgrep -U 0 (O UID de root é 0)
 
 
 38. 103.5 Criar, Monitorar e Encerrar Processos=======================
@@ -548,9 +557,14 @@ Digitando:
   ? ou h mostra as opçoes
 
 Ex:
-  'top -b' exibe o top na tela sem ser iterativo
+  'top -b' exibe o top na tela sem ser iterativo. O top jogará 
+	uma nova atualização de tempos em tempos na tela
   -d3 configura o tempo de atualização
   -n3 quantidade de atualizações
+  Ex:
+	top -b -d3 -n3
+	Muito útil para jogar isso em um arquivo de texto para criar
+	um log
 
 
 39. 103.5 Criar, Monitorar e Encerrar Processos=======================
@@ -568,7 +582,9 @@ suas configurações
 3) SIGQUIT fecha o processo
 9) SIGKILL matar abrptamente, não pode ser ingonorado pelo programa
 15) SIGTERM solicita ao processo que finalize, fazendo que ele termine
-as sessoes ativas e morre
+as sessoes ativas e morre. Sinal padrão do comando 'kill'
+*O SIG pode ser otimitido ao especificarmos o nome do sinal
+*Quando digitamos CTRL + <algo> estamos enviando um sinal ao processo
 
 Ex:
   kill <ID do processo> !!! envia o sinal SIGTERM de ID 15
@@ -609,10 +625,13 @@ CTRL + a r volta para o screen
 == jobs, bg, fg, nohup================================================
 
 Processo em foregroud deixa o terminal preso
-Para colocar o processo em backgroup usamos o '&', será exibido o ID
-do job e ID do processo
+Para colocar o processo em backgroup usamos o '&', será exibido o 
+ID do job e ID do processo
+Ex: 
+	[1] 2477
 
 O comando 'jobs' exibe as tarefas que estão em background
+	-l exibe o PID do processo
 CTRL + Z coloca o processo em stopped
 
 O comando 'bg' coloca o ultimo job que tem o + em backgroud
@@ -620,6 +639,11 @@ O comando 'fg' coloca o ultimo job que tem o + em foreground
   aceita como parâmetro o ID do job
 
 O comando 'nohup' impede que o processo não aceite o sinal de HUP
+  Ao nos conectamos via ssh e acabarmos perdendo a conexão todos os
+	processos que foram iniciados irão receber um SIGHUP do shell e
+	vão morrer. Para isso podemos usar o comando nohup. Outra função
+	é redirecionar a saida dos programaas iniciados serão enviados
+	para um arquivo ao invés da tela
 Ex: 
   nohup firefox &
 
@@ -646,9 +670,9 @@ CTRL + B " cria um painel horizontal
 CTRL + B d sai do temporarimente do tmux
 CTRL + B & fecha a janela
 
-'tmux attach -t <nome da sessão>' permite voltar para sessao
+'tmux attach -t <nome da sessão>' permite voltar para sessão
 'tmux new -s <nome da sessão>' cria uma nova conexão
-'tmux kill-session -t <nome da sessão>
+'tmux kill-session -t <nome da sessão>' mata a sessão
 
 
 44. 103.6 Modificar a Prioridade de Execução dos processos============
