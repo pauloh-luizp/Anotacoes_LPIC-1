@@ -460,8 +460,14 @@ Ex:
 > Curso preparatorio
 > lpic-1
 > final
-CURSO PREPARATORIO PARA CERTIFICADO
+CURSO PREPARATORIO 
 LPIC-1
+
+#######
+'cat <<.>/dev/stdout'
+O Bash entrará no modo de entrada Heredoc e sairá com quando um
+  ponto final aparecer sozinho em uma linha.
+  O texto digitado será redirecionado para stdout (impresso na tela)
 
 O '<<<' "here string" Ele redireciona a string digitada como se fosse
 um conteúdo de um arquivo texto
