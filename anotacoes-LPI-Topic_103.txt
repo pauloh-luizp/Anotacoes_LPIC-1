@@ -422,11 +422,20 @@ Ex:
 
 STDIN (0) ---> PROGRAM ---> STDOUT (1)
                   |
-                  ---> STDERR (2)
+                  \--> STDERR (2)
 
 STDIN (0) Entrada padrão: teclado
 STDOUT (1) Saída padrão: tela
 STDERR (2) Saída padrão: tela
+
+#######
+
+O redirecionamento de saída sobrescreve um destino gravável existente
+  sem pedir nenhuma confirmação. Os arquivos são substituidos a menos
+  que a opção 'noclobber' esteja habilitada no Bash.
+  A opção pode ser ativada com os comandos:
+    'set -o nocclobber'
+    'set -C'
 
 #######
 Redirecionar a saída padrão usamos o '>' ou o '>>'
@@ -455,14 +464,15 @@ Ex:
 
 O '<<' é usado quando queremos inserir um conteudo interativamente,
 até que se informe o seu fim.
-Ex:
-  tr a-z A-Z << final   !!! o "final" é a string delimitadora
-> Curso preparatorio
-> lpic-1
-> final
-CURSO PREPARATORIO PARA CERTIFICADO
+ExREPARATORIO
 LPIC-1
 
+#######
+'cat <<.>/dev/stdout'
+O Bash entrará no modo de entrada Heredoc e sairá com quando um
+  ponto final aparecer sozinho em uma linha.
+  O texto digitado será redirecionado para stdout (impresso na tela)
+  
 O '<<<' "here string" Ele redireciona a string digitada como se fosse
 um conteúdo de um arquivo texto
 Ex:
