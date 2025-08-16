@@ -491,6 +491,10 @@ o problema de pegar a saída padrão de um programa e usá-la como argu_
 mentos ou parâmetro para um comando ou programa.
 Ex:
   find /home -name "Aula*" | xargs rm
+Com a opção -I podemos usar substiuição de string
+Ex:
+  xargs -I IMG convert IMG -resize 25% small/IMG < filelist.txt
+  o IMG será substituido por cada uma das entradas de filelist.txt
 
 #######
 Subcomandos
@@ -695,7 +699,12 @@ O comando 'nice' define o nice do comando assim que o iniciamos
 O comando 'renice' altera o nice do comando que já está em execução
   -n ou --adjustment=-10
 Ex:
-  nice --15 firefox &
+  nice -n 15 firefox &
+  Prioridade positiva:
+    nice -15 firefox & 
+  Prioridade negativa:
+    nice --15 firefox & 
+
   renice -7 <PID> !!! valor 7 negativo
   renice 7 <PID> !!! valor 7 positivo
   renice -n 5 -u paulo <PID> !!! para o usuario paulo
@@ -703,8 +712,8 @@ Ex:
 
 Os valores vão de -20 a 19, o mais negativo tem a maior prioride
 Apenas o root pode aumentar a prioridade dos processos
-O valor padrão é 0
-Se não especificado a priridade, o padrão será 10
+O valor padrão de todos os processos inciados é 0
+Ao usar o 'nice' se não especificado a priridade, o padrão será 10
 
 
 46. 103.7 Pesquisar Arquivos de Texto com Expressoes regulares========
@@ -712,14 +721,14 @@ Se não especificado a priridade, o padrão será 10
 
 O comando 'grep' procura em um aquivo de texto ou em uma saida de um
 comando 
-  -c conta as ocoreencias no text
+  -c conta as ocorrências no texto
   -i ignorar o case sensitive
   -r procura também nos subdiretórios
   -E -e expande as expressoes regulares
   -v mostra todas a linhas que não contem o termo pesquisado
 
 Temos o 'egrep' é o grep com suporte com  expressões regulares
-Temos o 'fgrep' não suporta expressoes regulares
+Temos o 'fgrep' não suporta expressões regulares
 
 47. 103.7 Pesquisar Arquivos de Texto com Expressoes regulares========
 == regex, sed=========================================================
@@ -728,11 +737,13 @@ Maiores detalhes consultando o:
   man 7 regex
 
 Listas:
+  usa-se os colchetes [ ]
   egrep "b[aeiu]g" texto.txt
 
 "^Linux" indica o começo da linha
 "Linux$" indica o final da linha
-"^$" exibe as linha em branco
+"^$" exibe as linha em branco, pois procura tudo não tem nada entre
+  o inicio e final da liha
 -v "^$" exibe tudo, exceto as linhas em branco
 "|" expressão logica OU
 "*" requer que o caracter anterior apareça nenhuma, uma ou mais vezes
@@ -740,7 +751,7 @@ Listas:
 "?" requer que o caracter anterior apareça nenhuma ou apenas uma vez
 "." significa que a palavra tenha qualquer um caracter
 ".*" exige que o caracter antes do ponto apareça uma ou mais vezes e o
-restante pode ser qualquer caractere
+  restante pode ser qualquer caractere
 {1,3} o caracter anterior pode aparecer de 1 a 3 vezes
 
 #######
@@ -766,6 +777,10 @@ O egrep é um grep melhorado e entende {1,3} se colocarmos a '\'
 fará que ele busque pelo literal '{1,3}'
 
 #######
+
+man 7 regex !!! manual interessante sobre regex
+
+#######
 Tipos de meta caracteres:
   Character Set são aqueles que definem o grupo:
     . [] [^]
@@ -781,11 +796,11 @@ Tipos de meta caracteres:
     
     
 50. 103.8 Edição basica de arquivos===================================
-== vim/vim============================================================
+== vi/vim=============================================================
 
 Modos de operação:
   Navegação: 
-    teclando 'esc' 
+    teclando 'ESC' 
   Inserção: 
     teclando 'i' ou teclar 'insert'
     teclando 'o' insere a partir da linha de baixo
@@ -793,6 +808,7 @@ Modos de operação:
     teclando 'a' insere a partir do proximo caracter
     teclando 'A' insere no final da linha
   Visual:
+
 
 Procurar por um conteudo:
   / busca do ponto atual até o final do arquivo
@@ -824,7 +840,8 @@ Se digitarmos apenas Vi ele abre um espaco em branco
 para salvar temos que digitar :w <nome do arquivo>
 
 Carregando as alterações em um arquivo feitas pelo um outro processo
-digitamos :e!
+  digitamos :e ou :e! caso já tenha feito uma alteração no arquivo
+  antes do processo que modificou ele
   
   
 52. 103.8 Edição basica de arquivos===================================
