@@ -45,13 +45,26 @@ USB - Universal Serial Bus
 Partições virtuais
 
 /proc - informações dos processo ativos e recursos de hardware
+  Os arquivos não estão em disco pois são arquivos virtuais.
+    Eles estão em algum lugar da memória RAM
 /sys - informações sobre dispositivos de hardware (sysfs)
         sysfs é o file system do sys
 /dev - referencia aos dispositivos do sistema, inclusive de 
   armazenamento (udev). udev = device manager
+  é o udev que monta os dispositivos e o gerencia os dispositivos
+  no /dev. Dado pelo processo 'udevd'
 
-dbus/hald = comunicação entre processos. Informa os processos a 
-  situação dos dispositivos de hardware
+dbus/hald = comunicação entre processos. 
+  Informa os processos a situação dos dispositivos de hardware.
+  Dado pelo serviço dbus-daemon. É o serviço central do D-Bus
+  um sistema de comunição entre processos (IPC) que os programas
+  usam para trocar mensagem de forma segura e organizada
+  Temos:
+    System bus: comunicação entre serviços do sistema (udev, 
+      NetworkManager)
+    Session bus: comuniçãoao entre apps do usuário (notificações
+      e controle de mídia)
+  
 
 O /proc contém informações do sistema
 As informações sobre a CPU estão disponíveis em /proc/cpuinfo
@@ -69,11 +82,14 @@ O /dev tem as referencias a um dispositivo de hardware
 == udev================================================================
 
 O udev identifica os dispositivos conectados e cria os mapeamentos para
-esses dispositivos no sistema. As regras das ações tomadas estão em
-/lib/udev/rules.d/ o usuario e administrador pode criar as regras e
-/etc/udev/rules.d/
+  esses dispositivos no sistema. As regras das ações tomadas estão em
+  /lib/udev/rules.d/ o usuario e administrador pode criar as regras e
+  /etc/udev/rules.d/. O número antes do nome do arquivo identifica a 
+  ordem de execução das regras.
+
 O udev utiliza um filesystem que fica em memória, do type=tmpfs
 
+O tmpfs é um tipo de filesyste que grava em memória, não em disco
 
 62. 101.1 Identificar e Configurar o Hardware==========================
 == IDE, PATA, SATA, SCSI===============================================
@@ -92,6 +108,19 @@ SATA - Serial Advanced Technology Attachment
     /dev/sdc - Terceiro disco
 
 SCSI - Small Computer System Interface
+  8 bits (7 dispositivos + 1 controlador)
+  16 bits (15 dispositivos + 1 controlador)
+  Podemos ver as informações em /proc/scsi/scsi
+
+Outros dispositivos
+  /dev/fd0 - Disquete / Floppy Disk
+  /dev/scd0 - SCSI CD-ROM
+  /dev/sr0 - SCSI DVD
+  /dev/cdrom - Normalmente criado como link para o device do cdrom
+  /dev/dvd - Normalmente criado com link para o device de dvd
+
+Podemos ver os logs dos dispositivos durante o boot 
+  com o comando 'dmesg'
 
 
 63. 101.1 Identificar e Configurar o Hardware==========================
@@ -102,10 +131,12 @@ Os modulos ficam em /lib/modules/ verificar qual o arqivo utilizado
   pela kernel atual. Os arquivos .ko são os modulos
 
 Podemos definir quais modulos que queremos que seja carregado em 
-/etc/modules
+  /etc/modules
 
 O comando 'lsmod' lista os modulos carregados pelo Linux. O 'lsmod' lê
-  as informações /proc/modules
+  as informações /proc/modules. Os modulos podem ter depenências
+  necessitando que outro modulo seja carregado antes dele.
+  Na coluna Used by podemos ver a dependÊncia dos módulos
 
 O comando 'modinfo' mostra os detalhes de um modulo
 
@@ -116,11 +147,12 @@ Ex:
 
 O comando 'insmod' carrega um modulo, mas não carrega as dependências
 Ex:
-  'insmod <caminho-do-modulo>'
+  'insmod <caminho-completo-do-modulo>'
   'insmod /lib/modules/4.8.0-46/kernel/drivers/input/psmouse.ko'
 
 O comando 'modprob' carrega ou remove um modulo e carrega as 
-  dependencias
+  dependencias. Identifica o nome do arquivo completo com arquivo
+  de módulo
 Ex:
   'modprobe <nome-do-modulo>' para inserir um modulo
   'modprobe -r <nome-do-modulo>' para remove um modulo
@@ -130,8 +162,9 @@ Ex:
 == modprobe============================================================
 
 É possivel usar arquivos de configuração para determinar e configurar
-algumas coisas /lib/modprob.d como adminstrador utilizamos o diretorio
-/etc/modprob.d
+  algumas coisas.
+  o sistema irá utilizar /lib/modprob.d   
+  como adminstrador utilizamos o diretorio /etc/modprob.d
 
 O arquivo fbdev-blacklist.conf faz o modprob ingnorar um modulo, muita
   das vezes por conta de conflitos ou por outro problema
@@ -140,16 +173,27 @@ O arquivo fbdev-blacklist.conf faz o modprob ingnorar um modulo, muita
 66. 101.2 O processo de Boot===========================================
 == BIOS================================================================
 
-A MBR está localizada no primeiro setor do disco bootável, contém as 
-informações sobre o GRUB e o carrega
+Processo de BOOT
+  Loaliza e executa a MBR --> Executa o bootloader --> o Bootloader
+    seleciona e executa o Kernel e o initird --> o Kernel executa o
+    /sbin/init --> o Init inicia os programas do runlevel/target 
+    definidos
+
+A MBR está localizada no primeiro setor do disco bootável /dev/hda,
+  contém as informações sobre o GRUB e o carrega
 
 O Bootloader é gerenciado de boot, tem a função de carregar o sistema
   operacional na memória. Carrega também o initd/initramfs responsável
-  por dar suporte ao kernel
+  por dar suporte ao kernel. Filesystem root (/) temporário carregado
+  em memória RAM
 
 O Init tem a função de iniciar os primeiros processos e serviços do 
   Linux. Possui ID 1. Possui RunLevels ou Targets que define diferentes
-  modos de operação e o grupo de serviços que será iniciado
+  modos de operação e o grupo de serviços que será iniciado. Principais
+  INITs utilizados: SystemV (SysV) init original do Linux, systemd e 
+  Upsart.
+O conceito de RunLevels vem do SystemV e o conceito de Target vem do
+  Systemd
 
 O comando 'dmesg' permite visualizar as infomações/log processadas
 durante o boot. Também é possivel visualizar essas informações em
@@ -173,7 +217,9 @@ O UEFI não utiliza a MBR, ele obtem os bootloaders pelo ESP
 68. 101.2 O processo de Boot===========================================
 == journalctl==========================================================
 
-O comando 'journalctl' faz a coleta de logs e informações do sistema
+O journalctl faz a coleta de logs e infomações do sistema e do boot
+
+Com o comando 'journalctl' podemos ver
   -b mostra os logs do boot atual
   -k mostra as mensagens do kernel do boot atual
 
@@ -181,7 +227,12 @@ O comando 'journalctl' faz a coleta de logs e informações do sistema
 70. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
 == SysV/init===========================================================
 
-O sysV trabalha com RunLevels que é o nivel de execução do sistema e 
+Para verificar qual sistema de inicialização utilizado podemos olhar 
+  o processo de ID 1 que é o primeiro a ser inicializado.
+  'ps -p 1'
+  'stat /proc/1/exe'
+
+O SysV trabalha com RunLevels que é o nivel de execução do sistema e 
 cada RunLevel carrega um conjunto de programas, scritps e serviços
 O arquivo de configuração principal fica em /etc/inittab
 Os scripts em /etc/init.d/ e /etc/rd.d/
@@ -196,6 +247,14 @@ Os RunLevels
   5             Multi usuário (com rede e gráfico)
   6             Reinicialização
 
+Para saber qual o init default procuramos a linha initdefault no 
+  arquivo /etc/inittab
+
+Os arquivos referentes a inicialização dos serviços ficam em 
+  /etc/init.d
+
+Os runlevels possui um diretório exclusivo dentro do /etc
+
 O comando 'runlevel' mostra o runlevel em que estamos
 O comando 'init <ID-runlevel>' ou 'telinit' altera o runlevel
 O comando 'telinit' é semelhante ao init
@@ -208,21 +267,31 @@ Para iniciar um processo fazemos
 72. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
 == systemd=============================================================
 
-O systemd é melhor que o init. Utiliza o conceito de Units.
+O systemd é melhor que o init. Utiliza o conceito de Units e grupos
+  de Units que chamamos de Targets
+
+O target é um grupo de serviços e de unidades. O sistemd também temos
+  um target default
 
 A unit = nome.tipo (ex: httpd.service)
 
 Tipos de serviços: service, socket, device, mount, automount, snapchat
   target (equivalente aos runlevels)
 
-O diretorio principal de configuração fica em /lib/systemd/system
-  o target.default aponta para qual target será utilizado
-  Outro diretório é o /etc/systemd/system
+O diretorio principal de configuração das unidades fica em
+  /lib/systemd/system o target.default aponta para qual target 
+  será utilizado. 
+  Outro diretório é o /etc/systemd/system que também contém arquivos
+  referentes a configuração do systemd
 
 O principal comando é o 'systemctl'
   list-units exibe todas as unidades
+    Para verificar a quantidade de targets podemos fazer
+    'ls -l /lib/systemd/system/*target | wc -l'
+    'systemctl list-unit-files --type=target'
   setdefault <nome-do-target> altera o target default
   is-enable verifica se está ativo
+  disable para desabilitar um serviço
 
 Mudando de target no systemd
   'systemctl isolate <nome-do-target>'
@@ -231,10 +300,13 @@ Mudando de target no systemd
 73. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
 == upstart=============================================================
 
-O upstart é um geranciador de serviço que mantem a compatibilidade com
-o init. As configuração ficam /etc/init
+O upstart é um geranciador de serviço substituto ao init mas que
+mantém a compatibilidade com o init. As configuração ficam /etc/init
 Principais comandos:
-  'initctl'
+  'initctl list'
+  'start <serviço>'
+  'stop <serviço>'
+  'status <serviço>'
   
 
 74. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
@@ -253,13 +325,14 @@ Os comando 'reboot', 'poweroff' e 'halt' são semelhantes ao 'shutdown'
 O comando 'wall' é utilizado para mandar uma mensagem para todos os 
   usarios do sistema
 
+
 75. 101.3 Alterar os RunLevels, Shutdown e Reboot======================
 == acpi================================================================
 
 ACPI - Advanced Configuration and Power Interface
 
 Trata de itens referentes ao genrenciamento de eneriga do hardware
-O processo acpid monitora os eventos relacionados ao gerenciamento de
-  energia da máquina
+O processo acpid (/usr/sbin/acpid) monitora os eventos relacionados 
+  ao gerenciamento de energia da máquina
 
 O comando 'acpi' mostra informações relacionados a energia
