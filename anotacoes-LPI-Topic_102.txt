@@ -73,7 +73,9 @@ UEFI Caracteristicas:
 
 'df -T' mostra todas as partições
 
-O ESP está localizado em df/boot/efi
+O ESP está localizado em /boot/efi
+
+O comando 'efibootmgr' para ver e alterar as informações do bootloader
 
 
 84. 102.2 Instalação e configuração do Boot Managemnt==================
@@ -95,6 +97,9 @@ A paritr da configuração dos arquivos que estão nos diretórios
 /etc/default/grub e /etc/grubd/ que será gerado o 
 /boot/grub/grub.cfg
 
+Em /boot/grub/device.map temos a informação de como o grub mapeia 
+  os discos
+
 Em /boot/ temos versões anteriores da Kernel, teste de memória,
 aplicações para recovery, initrd e o arquivo de configuração do grub
 
@@ -102,13 +107,13 @@ O arquivo de configuração do grub é o grub.cfg, para atualiza-lo
 utilizamos os comandos:
   'update-grub' ou 'grub-mkconfig -o <arquivo a ser atualiado>'
 O arquivo do grub que podemos alterar é o /etc/default/grub
-O scripts usados para montar o grub.cfg ficam em /etc/grub,d/
+O scripts usados para montar o grub.cfg ficam em /etc/grub.d/
 
 'update-grub --version' exibe a versão do grub
 
 Backup do arquivos do grub:
-  'dd if=<disco de origem> of=<nome do arquivo de backup> bs=1
-  bs=1 é Byte por Byte
+  'dd if=<disco de origem> of=<nome do arquivo de backup> bs=512 count=1
+  count=1 é Byte por Byte
 
 Recuperando o grub:
   'dd if=<nome do arquivo de backup> of=<disco de destino>'
@@ -145,6 +150,8 @@ O comando 'ldconfig' recompila o ls.so.cache
 Para incluir bibliotecas sem ser usuario root, utilizamos uma variavel
 de ambiente LD_LIBRARY_PATH
 
+Em /etc/ld.so.conf.d/ temos /lib, /lib32 e /lib64 apontam para 
+  /usr/lib, /usr/lib32 e /usr/lib64
 
 90. 102.4 Gerenciamento de pacotes Debian==============================
 == Debian x RPM, comando dpkg==========================================
@@ -264,8 +271,8 @@ principais:
     -qc <pacote> lista os arquivos de configuração
     -qd <pacote> arquivos de documentação
     -qf <caminho> mostra a aplicação que instalou o arquivo
-    -qlp <pacote.rpm> lista os arquivos que estão dentro do pacote
-    -qR <pacote> verifica as dependências
+    -qpL <pacote.rpm> lista os arquivos que estão dentro do pacote
+    -qPR <pacote> verifica as dependências
   instalação:
     -i de instalação; -U para fazer update
     -ivh  verbose, hash de progresso
