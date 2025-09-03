@@ -112,8 +112,8 @@ O scripts usados para montar o grub.cfg ficam em /etc/grub.d/
 'update-grub --version' exibe a versão do grub
 
 Backup do arquivos do grub:
-  'dd if=<disco de origem> of=<nome do arquivo de backup> bs=512 count=1
-  count=1 é Byte por Byte
+  'dd if=<disco origem> of=<nome do arquivo de backup> bs=1 count=512
+  bs=1 é Byte por Byte
 
 Recuperando o grub:
   'dd if=<nome do arquivo de backup> of=<disco de destino>'
