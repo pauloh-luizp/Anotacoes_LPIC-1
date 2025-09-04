@@ -137,15 +137,20 @@ Ex:
   ldd /usr/bin/vi
   os .so são as bibliotecas
 
+A aplicação internada ld.so é quem faz o mapeamento das bibliotecas
+
 Diretorios padrão que a ld.so busca as bibliotecas /lib e /usr/lib
 
 O mapeamento de todas bibliotecas conhecidas estão em /etc/ld.so.cache
+
 O ld.so.conf é o arquivo de configuração em que podemos adicionar 
 novos caminhos de bibliotecas
 Para incluir uma nova biblioteca
   vim /etc/ld.so.conf; adicionar uma linha
   ldconfig
 O comando 'ldconfig' recompila o ls.so.cache
+  -p irá listar todas as bibliotecas que estão reconhecidas pelo Linux
+    no momento
 
 Para incluir bibliotecas sem ser usuario root, utilizamos uma variavel
 de ambiente LD_LIBRARY_PATH
@@ -200,9 +205,13 @@ Para ver quais arquivos estão dentro do pacote: 'dpkg -I <nomepacote>'
 ou 'dpkg --contents <nomepacote>'
 
 Para instalar 'dpkg -i <nomepacote>'
+
 Para listar os arquivos que o pacote instalou: 'dpkg -L <nomepacote>'
+
 Status do pacote 'dkpg -s  <nomepacote>'
+
 Para saber a origem o arquivo: 'dkpg -s <caminho>'
+
 Para remover um pacote:
   'dpkg -r <nomepacote>'
   mantem informações sobre o pacote
@@ -218,6 +227,7 @@ Arquivo de configuração do apt
 
 O apt-cache mostra as informações que o apt tem em sua base
   'apt-cache depends <nomepacote>' mostra as dependencias do pacote
+  'apt-cache pkgnames' lista os pacotes instalados
 
 O apt-get obtem pacotes com base no seus source.list
   'apt-get update' busca atualizações sobre novos pacotes
