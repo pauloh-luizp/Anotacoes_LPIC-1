@@ -276,13 +276,15 @@ rpm é equivalente ao deb e ele trabalha em módulos, temos 3 modulos
 principais:
   consulta: 
     -q de query
+    -qi <pacote> mostra as informacoes sobre o software que queremos
     -qa <pacote> mostra as informacoes do pacote instalado
     -ql <pacote> lista os arquivos que pertence a essa instalação
     -qc <pacote> lista os arquivos de configuração
     -qd <pacote> arquivos de documentação
     -qf <caminho> mostra a aplicação que instalou o arquivo
     -qpL <pacote.rpm> lista os arquivos que estão dentro do pacote
-    -qPR <pacote> verifica as dependências
+    -qpR <pacote.rpm> verifica as dependências
+      --requires
   instalação:
     -i de instalação; -U para fazer update
     -ivh  verbose, hash de progresso
@@ -308,24 +310,29 @@ Os arquivos de fontes de pacotes /etc/yum.repos.d
 Opções do yum:
   check -  validação na base de dados do rpm
   install -  instalação de pacotes
-    --downloadonly <pacote>  --downloaddir=<diretorio>
+    --downloadonly --downloaddir=<diretorio> <pacote>
       baixa os pacotes e suas dependencias e coloca no diretorio
       especificado
   update - atualiza todos os pacotes
   upgrade - remove pacotes obsoletos
   check-update - verifica os pacotes que estão desatualizados
+  remove/erase - remove um ou mais pacotes
   list - lista todos os pacotes e versões instaladas e sua origem
   search <pesquisa> - mosta os pacotes relacionados a pesquisa
+  --checksig <pacote.rpm> verifica se o pacote o checksum do pacote
+    está integro
 
-rpm2cpio extrai um .rpm para cpio
+rpm2cpio extrai um .rpm para cpio (que é um agrupamento de arquivos).
+  É uma forma de extrair o que temos dentro de um pacote rpm
   'rpm2cpio pacote.rpm > nomepacote.cpio'
 
 
-100. 102.5 Gerenciamento de pacotes RPM e YUM===========================
+100. 102.5 Gerenciamento de pacotes RPM e YUM==========================
 == DNF (Noções)========================================================
 
 O Fedora utiliza o DNF no lugar do yum. O DNF veio de um fork do yum.
-Foi criado para melhorar o desempenho e no quesito de dependências
+Foi criado para melhorar o desempenho e no quesito de resolução de
+  dependências
 Os comandos do 'dnf' são os mesmo do yum
 
 
@@ -333,6 +340,12 @@ Os comandos do 'dnf' são os mesmo do yum
 == zypper (SUSE)========================================================
 
 zypper equivalente ao yum
+
+'zypper ls' lista os repositórios
+'zypper inf <pacote>' tras informações sobre o pacote
+'zypper refresh' atualiza a base dados dos repositorios
+'zypper update' atualiza os pacotes
+
 Arquivo de configuração /etc/zypp/repos.d/
 
 
