@@ -352,6 +352,11 @@ Arquivo de configuração /etc/zypp/repos.d/
 103. 102.6 Linux e Virtualização========================================
 ========================================================================
 
+Verificando o D-Bus Machine ID
+/etc/machine-id
+
+systemd-machine-id-setup --print
+
 Verificar se estamos em uma maquina real ou virtualizada:
   cat /proc/cpuinfo | grep hypervisor ; se não exibir nada é que
     estamos em uma máquina real
