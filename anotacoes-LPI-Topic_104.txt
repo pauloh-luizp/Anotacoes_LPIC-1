@@ -3,6 +3,14 @@ TOPICO 104: Dispoitivos, sistemas de arquivo Linux e FHS===============
 109. 104.1 Criando Partições e Sistemas de Arquivos====================
 == fdisk===============================================================
 
+Podemos ter até 4 partições primárias e uma partição extendida.
+As partições primárias não precisam manter a sequência: sda1, sda3
+As partições lógicas precisam manter a sequência, tanto é que ao 
+  deletarmos uma partição lógica dentro de uma sequencia, ela será 
+  reorganizada para manter a sequência.
+  Ex: se tivermos as partições sda5, sda6 e sda7 e deletarmos a 
+    sda6, a partição sda7 virará a partição sda6
+
 O comando 'fdisk' é utilizado para criar partições excluir partições
   <nome-do-disco> entra no utilitador do fdisk configuração do disco
   n para criar uma nova partição
@@ -30,7 +38,7 @@ Ex:
   'mkfs -t ext4 /dev/sdb1'
   'mkfs.ext4 /dev/sdb2'
   'mkswap /dev/sdb5' para formatar partiçoes do tipo swap
-    'swap /dev/sdb5' para incluir a particao como swap
+  'swapon /dev/sdb5' para incluir a particao como swap
 
 'file -s /dev/sdb1' exibe o file system que a partição está formatada
 
@@ -41,7 +49,11 @@ Ex:
 O comando 'parted' é similar ao fdisk, com adicional de permiter o
   redimensionamento de partições
   'parted <nome-do-disco>'
-  resizepart <numero-da-particao> <novo-final-da-partição> redimensiona
+    'resizepart <numero-da-particao> <novo-final-da-partição>'
+  redimensiona a partição
+
+Com o comando 'parted -l' podemos listar todas as partições e seus 
+  tipos de sistema de arquivos
 
 O comando 'gparted' é o 'parted' com o modo gráfico
 
@@ -52,13 +64,14 @@ O comando 'gparted' é o 'parted' com o modo gráfico
 Btrfs - B-tree File System
 Foca em tolerância a falhas e facilidade de administração e reparo 
 Recursos:
-  Implementação de RAID dentro do file system, suportando RAID 0,1,10
+  Implementação de RAID dentro do file system, suportando RAID 0,1,10;
   SubVolumes: Estrutura dentro de uma partição/volume; pode ser montado
-    separadamente
-  Compressão transparente: ompressão pode ser feita diretamente no FS;
-    Algoritmos zlib, LZO, ZSTD
-  Snapshot
-  Conversão de ext3 para btrfs
+    separadamente; podemos ter quantos subvolumes quisermos e montar
+    onde quisermos.
+  Compressão transparente: compressão pode ser feita diretamente no FS;
+    Algoritmos zlib, LZO, ZSTD;
+  Snapshot que é uma foto de um sistema de arquivos
+  Conversão de ext2, ext3 e ext4 para btrfs;
 
 
 114. 104.1 Criando Partições e Sistemas de Arquivos====================
@@ -67,8 +80,15 @@ Recursos:
 exFAT = Extended FAT ou FAT64
 Sistema de arquivos otimizado para pen drives/flash drives
 É intermediário entre o FAT e o NTFS
-O limite de tamanho é de 16EB Exabyte
+O limite de tamanho é de 16EB Exabyte, no FAT o limite é de 4GB
 Para usa-lo é necessário instalar os pacotes exfat-fuse e exfat-utils
+  Nas versões mais recentes o pacote exfat-utils foi substiuido pelo
+  exfatprogs
+
+Podemos formatar usando o comando
+  'mkfs.exfat /dev/sdb1'
+
+No comando 'df' o exfat aparecerá como fuseblk
 
 
 116. 104.2 Mantendo a integridade de FSs===============================
@@ -109,11 +129,14 @@ O comando 'tune2fs' é usado para fazer ajustes nas partições
   -i para alterar o tempo de checagem 'fsck' no disco
   -c para alterar o numero de montagens antes de fazer uma checagem
   -m para alterar o tamanho de espaco reservado do disco
-  -j habilita o journal que não tem o journal
+  -j habilita o journal que não tem o journal faz com que uma partição
+    ext2 vire uma partição ext3
 
 Ex:
   'tune2fs -L "minhaparticao" /dev/sda1'
   'tune2fs -c 30 /dev/sda1'
+
+O comando 'dumpe2fs' exibe as informações sobre partições Linux
 
 O comando 'xfs_admin' é semelhante ao 'tune2fs' porem usado para 
   partições XFS
@@ -121,6 +144,8 @@ O comando 'xfs_admin' é semelhante ao 'tune2fs' porem usado para
 
 119. 104.2 Mantendo a integridade de FSs===============================
 == XFS=================================================================
+
+Instalamos o XFS pelo pacote 'xfsprogs'
 
 O comando 'xfs_info' tras informações sobre a partição
 
@@ -144,15 +169,24 @@ O comando 'dumpe2fs <particao> -h' exibe todos os detalhes da partição
 
 O comando 'mount' permite montar uma partição, ao utilizar sem parâme
   tros ele exibe todas as partições e onde estão montadas. Geralmente
-  as partições são montadas ou no /media ou no /mnt. O comando só pode
-  ser utilizado pelo usuário root
+  as partições são montadas ou no /media ou no /mnt. 
+  O comando só pode ser utilizado pelo usuário root.
+  ***Existe exeções caso a partição tenha a opção user ou users 
+    especificadas no na configuração feita pelo root no /etc/fstab 
   -a monta todas as partições especificadas no /etc/fstab
   -r monta para somente leitura
-  --bind para associar um diretorio ao outro
+  --bind para associar um diretorio ao outro, já que mount é entre
+    uma partição e um ponto de montagem. Para visualizar os binds é
+    necessário usar 'df -a'
   Ex:
     'mount /dev/sdb2 /tmp/test_mount'
     'mount --bind /opt /home/paulo/teste'
-  
+ 
+Podemos ver todas as partições montadas ao dar um cat no arquivo
+  '/proc/self/mounts' ou '/proc/mounts' ou '/cat/mtab'
+  Também podemos ver pelo systemctl:
+    'systemctl list-unit --type=mount'
+
 O comando 'unmount' permite desmontar uma partição
   -a desmonta todas as partições especificadas no /etc/fstab
   Ex:
@@ -172,12 +206,30 @@ Podemos utilizar o Filesystem UUID e o Filesystem volume name
        leitura, somente quem montou a partição pode ou não desmontar
        geramente utilizamos o "defaults". "users" para permitir que
        qualquer usuario consiga montar e desmontar, "user" para que 
-       que todos os usuario consigam montar, porém somtente aquele 
-       que montou a partição consiga desmontar. Tanto para "user" ou
+       que todos os usuario consigam montar, porém sometente aquele 
+       que montou a partição consige desmontar. Tanto para "user" ou
        "users" requer que o usuário root tenha configurado no fstab o
-       ponto de montagem. Ao fazer 'mount /mnt/teste1' a partição sera
+       ponto de montagem. Ao fazer 'mount /mnt/teste1' a partição será
        montada por qualquer usuário desde que previamente configurada
        no fstab pelo root
+
+       rw = Partição aceita gravação de dados (ReadWrite)
+       ro = Partição não aceita gravação de dados, é apenas leitura (ReadOnly)
+       auto = Partição será montada automaticamente durante o boot e quando usado o comando “mount -a)
+       noauto = Proíbe a montagem automática. Normalmente utilizado com dispositivos removíveis.
+       sync = Estabelece E/S síncrona
+       async = Estabelece E/S assíncrona
+       dev = Interpreta dispositivos especiais, como os existentes na partição /dev
+       exec = Habilita a execução de programas contidos nessa partição
+       noexec = Proíbe a execução de programas executáveis contidos na partição
+       suid = Habilita o uso do SUID e SGID
+       nosuid = Desabilita o uso do SUID e SGID
+       user = Permite que um usuário comum monte um sistemas de arquivos, mas apenas este usuário conseguirá desmontá-lo
+       users = Permite que um usuário comum monte um FS, mas qualquer usuário poderá desmontá-lo
+       nouser = Apenas root pode montar e desmontar a partição
+       usrquota = Habilita o uso de quotas por usuário
+       grpquota = Habilita o uso de quotas por grupo
+       defaults = Define o conjunto de opções: rw, suid, dev, exec, auto, nouser e async
 5° - Era uma aplicação para fazer backup ao iniciar a máquina
 6° - Checagem do filesystem ao bootar a maquina, 0 para desabilitado
        ou colocamos o numero da ordem para fazer o 'fsck'
@@ -237,6 +289,8 @@ As permissões tem efeitos ligeiramente diferentes quando tratamos de
   Para diretorios: "r" consegue listar o conteudo do diretorio,
     "w" consegue criar e remover arquivos e diretorios dentro desse
     diretorio, "x" permite que o usuário entre no diretorio
+    Se temos o "r" mas não temos o "x" conseguimos dar um 'ls' mas 
+    não conseguimos dar um 'cd'
 
 Alteramos as permissões usando o comando 'chmod'
   Alvo:
@@ -273,13 +327,13 @@ Ex:
 128. 104.5 Gerenciando Permissões e Propriedades de Arquivos===========
 == SUID, SGUID, Stick==================================================
 
-Um script é executado seguindo as permissões do usuário que está execu
-  tando um script e não com as permissões do dono do script
+Um script é executado seguindo as permissões do usuário que está 
+  executando um script e não com as permissões do dono do script
 
 O SUID permite o script rode com as permissões de quem criou o script
 
 O "s" na permissão do arquivo no lugar do "x" indica que ele tem o 
-atribuito SUID. Quando o "s" está maisculo não temos o "x".
+atribuito SUID. Quando o "S" está maisculo não temos o "x".
 Para permitir que um script tenha o atribuito SUID damos um 'chmod' no
 usuário:
 Ex:
@@ -298,7 +352,7 @@ O 'stick' é uma propriedade que faz com que somente quem criou os
   o "x" do campo others será substituido pelo "t"
 Ex:
   'chmod o+t arquivo1'
-Quando o "t" está maiusculo significa que o arquivo não tem a permissao
+Quando o "T" está maiusculo significa que o arquivo não tem a permissao
   de execução, quando está minusculo siginifica quando o arquivo pode
   ser executado
 
@@ -320,11 +374,12 @@ O comando 'umask' é uma mascara para a definição das propriedades dos
   Ao rodarmos o comando sem nenhum parametro ele exibe a mascara
   o valor exibido é subtraido como valor padrão
   Ex:
-    umask = 0002; um novo arquivo criado terá permissão do dono igual
-    a 6-0=6, para o grupo igual a 6-0=6 e para outros 6-2=4 ficando
+    umask = 0002; 
+    666 - Para arquivos criado terá permissão do dono igual a 6-0=6, 
+    para o grupo igual a 6-0=6 e para outros 6-2=4 ficando
     -rw-rw-r--
-    para um diretorio criado terá permissao do dono igual a 7-0=0, para
-    o grupo igual a 7-0=7 e para outros igual a 7-2=5 ficando 
+    777 - Para diretorios criado terá permissao do dono igual a 7-0=0,
+    para o grupo igual a 7-0=7 e para outros igual a 7-2=5 ficando 
     -rwxrwx-r-x
 
 Altermos a mascara fazendo 'umask <nova-mascara>'
@@ -332,16 +387,19 @@ Ex:
   'umask 022' o umask será igual a 0022
 
 O comando 'chown' permite alterar o dono e o grupo dono do arquivo
+  Somente o usuario root consegue usar o 'chown'
   -R para mudar recursivamente os arquivos e diretorios
   'chown <novo-usuario> <arquivo/diretorio>' 1°
   'chown <novo-usuario>:<novo-grupo> <arquivo/diretorio>' 2°
   'chown <novo-usuario>.<novo-grupo> <arquivo/diretorio>' 3°
   'chown :<novo-grupo> <arquivo/diretorio>' 4°
+  'chown .<novo-grupo> <arquivo/diretorio>' 5°
 
   1° Alterando somente o usuario dono do arquivo
   2° Alterando o usuario e grupo dono do arquivo
   3° Alterando também o usurio e grupo dono arquivo
   4° Alterando somente o grupo dono do arquivo
+  5° Alterando também somente o grupo dono do arquivo
 
 O comando 'chgrp' permite mudar apenas o grupo dono do arquivo
   'chgrp <novo-grupo> <arquivo>'
@@ -351,8 +409,8 @@ O comando 'chgrp' permite mudar apenas o grupo dono do arquivo
 
 O numero após as permissões do arquivo indica o numero de referencias
   que temos para esse mesmo inode. Visualizamos com o 'ls -li'
-  Os diretorios tem por padrão o nome 2 por conta do diretorio interno
-  "." criado automaticamente
+  Os diretorios tem por padrão o número 2 na quantidade de links para o
+  inode por conta do diretorio interno "." criado automaticamente
 
 Link físico (Hard) - O link fisico estamos criando um outro nome que 
   aponta para o mesmo inode. Qualquer permissão alterada no aquivo será
@@ -369,7 +427,7 @@ Link simbolico (Soft) - É um arquivo que vai apontar para outro arquivo
   usamos a opção "-s". Um link simbolico tem sempre a permissão 777.
   O link simbolico pode apontar para arquivos que estejam em outra 
   partição. O tamanho do link é igual ao tamanho do nome do arquivo para
-  qual ele aponta.
+  qual ele aponta. É exibido um l nos detalhes da permissão: lrwxrwxr--
   Ex:
     Um link que aponta para '/tmp/teste.txt' terá tamanho 14
 
@@ -456,4 +514,4 @@ O comando 'type' mostra o tipo de arquivo que estamos olhando
 Uso do 'find' com o 'xargs' temos que usar o "print0" do find para usar
   o 'xargs'
 Ex:
-  'find ./ -print0 | xargs -O ls -l'
+  'find ./ -print0 | xargs -0 ls -l'
