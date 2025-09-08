@@ -214,22 +214,30 @@ Podemos utilizar o Filesystem UUID e o Filesystem volume name
        no fstab pelo root
 
        rw = Partição aceita gravação de dados (ReadWrite)
-       ro = Partição não aceita gravação de dados, é apenas leitura (ReadOnly)
-       auto = Partição será montada automaticamente durante o boot e quando usado o comando “mount -a)
-       noauto = Proíbe a montagem automática. Normalmente utilizado com dispositivos removíveis.
+       ro = Partição não aceita gravação de dados, 
+            é apenas leitura (ReadOnly)
+       auto = Partição será montada automaticamente durante o boot e 
+            quando usado o comando “mount -a)
+       noauto = Proíbe a montagem automática. Normalmente utilizado 
+            com dispositivos removíveis.
        sync = Estabelece E/S síncrona
        async = Estabelece E/S assíncrona
-       dev = Interpreta dispositivos especiais, como os existentes na partição /dev
+       dev = Interpreta dispositivos especiais, como os existentes 
+            na partição /dev
        exec = Habilita a execução de programas contidos nessa partição
-       noexec = Proíbe a execução de programas executáveis contidos na partição
+       noexec = Proíbe a execução de programas executáveis contidos
+            na partição
        suid = Habilita o uso do SUID e SGID
        nosuid = Desabilita o uso do SUID e SGID
-       user = Permite que um usuário comum monte um sistemas de arquivos, mas apenas este usuário conseguirá desmontá-lo
-       users = Permite que um usuário comum monte um FS, mas qualquer usuário poderá desmontá-lo
+       user = Permite que um usuário comum monte um sistemas de 
+            arquivos, mas apenas este usuário conseguirá desmontá-lo
+       users = Permite que um usuário comum monte um FS, mas qualquer 
+            usuário poderá desmontá-lo
        nouser = Apenas root pode montar e desmontar a partição
        usrquota = Habilita o uso de quotas por usuário
        grpquota = Habilita o uso de quotas por grupo
-       defaults = Define o conjunto de opções: rw, suid, dev, exec, auto, nouser e async
+       defaults = Define o conjunto de opções: rw, suid, dev, 
+            exec, auto, nouser e async
 5° - Era uma aplicação para fazer backup ao iniciar a máquina
 6° - Checagem do filesystem ao bootar a maquina, 0 para desabilitado
        ou colocamos o numero da ordem para fazer o 'fsck'
