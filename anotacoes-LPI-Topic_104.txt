@@ -183,7 +183,7 @@ O comando 'mount' permite montar uma partição, ao utilizar sem parâme
     'mount --bind /opt /home/paulo/teste'
  
 Podemos ver todas as partições montadas ao dar um cat no arquivo
-  '/proc/self/mounts' ou '/proc/mounts' ou '/cat/mtab'
+  '/proc/self/mounts' ou '/proc/mounts' ou '/etc/mtab'
   Também podemos ver pelo systemctl:
     'systemctl list-unit --type=mount'
 
@@ -241,6 +241,9 @@ Podemos utilizar o Filesystem UUID e o Filesystem volume name
 5° - Era uma aplicação para fazer backup ao iniciar a máquina
 6° - Checagem do filesystem ao bootar a maquina, 0 para desabilitado
        ou colocamos o numero da ordem para fazer o 'fsck'
+
+No arquivo /proc/filesystems lista todos os tipos de sistemas de
+  arquivos suportados pela nossa instalação
 
 
 123. 104.4 Controle de Montagem e Desmontagem de FSs===================
@@ -471,7 +474,7 @@ Diretorio     Finalidade                                Exemplo
 /tmp          Arquivos temporários
 /home         Diretório e arquivos dos usuários
 /var          Arquivos dinâmicos como logs, filas, etc
-/usr          Instalação de programas do Linux
+/usr          (Unix System Resource) Instalação de programas do Linux
               Normalmente não criticos
 /opt          Instalações de aplicações em Geral
 
