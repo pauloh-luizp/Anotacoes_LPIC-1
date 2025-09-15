@@ -94,7 +94,7 @@ Init: Inicia os programas do runlevel/target definido
 GRUB - GRAND UNIFIED BOOT LOADER
 
 A paritr da configuração dos arquivos que estão nos diretórios
-/etc/default/grub e /etc/grubd/ que será gerado o 
+/etc/default/grub e /etc/grub.d/ que será gerado o 
 /boot/grub/grub.cfg
 
 Em /boot/grub/device.map temos a informação de como o grub mapeia 
@@ -121,8 +121,8 @@ Recuperando o grub:
 84. 102.3 Gerenciamento de bibliotecas compartilhadas==================
 =======================================================================
 
-Uma biblioteca compartilhada é biblioteca que é acessada fora da aplica
-cao, compartilhada por diversas aplicações, não sendo necessária a 
+Uma biblioteca compartilhada é biblioteca que é acessada fora da apli
+cação, compartilhada por diversas aplicações, não sendo necessária a 
 criação de uma nova biblioteca. Permite ter aplicações menores e a
 biblioteca compartilhada fica carregada na RAM, cada vez que a bibliote
 ca muda não é necessário recompilar a aplicação.
@@ -139,7 +139,7 @@ Ex:
 
 A aplicação internada ld.so é quem faz o mapeamento das bibliotecas
 
-Diretorios padrão que a ld.so busca as bibliotecas /lib e /usr/lib
+Diretórios padrão que a ld.so busca as bibliotecas /lib e /usr/lib
 
 O mapeamento de todas bibliotecas conhecidas estão em /etc/ld.so.cache
 
@@ -152,7 +152,7 @@ O comando 'ldconfig' recompila o ls.so.cache
   -p irá listar todas as bibliotecas que estão reconhecidas pelo Linux
     no momento
 
-Para incluir bibliotecas sem ser usuario root, utilizamos uma variavel
+Para incluir bibliotecas sem ser usuario root, utilizamos uma variável
 de ambiente LD_LIBRARY_PATH
 
 Em /etc/ld.so.conf.d/ temos /lib, /lib32 e /lib64 apontam para 
@@ -198,7 +198,7 @@ todos os pacotes, seus arquivos e dependências
 #######
 DPKG
 
-Visualizar os pacotes instalados 'dpkg -l' ou dkpg --get-selections
+Visualizar os pacotes instalados 'dpkg -l' ou dpkg --get-selections
 'dpkg -l <nome do pacote>' mostra os detalhes do pacote
 
 Para ver quais arquivos estão dentro do pacote: 'dpkg -I <nomepacote>'
@@ -208,9 +208,9 @@ Para instalar 'dpkg -i <nomepacote>'
 
 Para listar os arquivos que o pacote instalou: 'dpkg -L <nomepacote>'
 
-Status do pacote 'dkpg -s  <nomepacote>'
+Status do pacote 'dpkg -s <nomepacote>'
 
-Para saber a origem o arquivo: 'dkpg -s <caminho>'
+Para saber a origem o arquivo: 'dpkg -s <caminho>'
 
 Para remover um pacote:
   'dpkg -r <nomepacote>'
