@@ -8,7 +8,7 @@ O comando 'echo' imprime na tela o conteúdo que foi digitado em seguida
 Comando internos são aqueles que fazem parte do Shell, os externo são 
 aqueles que são instalados posteriormente. 
 
-O comando 'type' permitever se o comando é interno ou não. 
+O comando 'type' permite ver se o comando é interno ou não. 
 Quando o programa é interno aparece como: "'comando' is a shell builtin", 
 as saídas como: "'comando' is hashed 'caminho/do/comando'" 
 ou "'comando' is 'caminho/do/comando'" significa que ele é exteno.
@@ -28,7 +28,7 @@ O './' indica que o arquivo que queremos executar esta nesse diretorio
 
 
 13. 103.1 Trabalhando na linha de comando==============================
-== Variaveis de ambiente===============================================
+== Variáveis de ambiente===============================================
 
 VARIAVEL=valor
 echo $VARIAVEL
@@ -68,8 +68,8 @@ PS1 - Aparencia do prompt do shell
 Variáveis definidas dinamicamente pelo Shell, são identificadas com
 um $ no começo.
 $$ - PID do bash atual
-$! - Mostra o PID do ultimo processo executado em background
-$? - Mostra o exit code do ultimo processo executado
+$! - Mostra o PID do último processo executado em background
+$? - Mostra o exit code do último processo executado
 
 '~' retorna o home do usuário
 '~user' retorna o home do user
@@ -100,7 +100,7 @@ o anterior der erro
 History
 
 'history' mostra os utlimos comando executados
-'!!' repite o ultimo comando digitado
+'!!' repete o último comando digitado
 '!<numero do comando na lista do history>' o comando com aquele numero
 '!<string>' executa o utlimo comando com aquele inicio de string
 'history -c' limpa o arquivo de histórico
@@ -140,7 +140,7 @@ which echo
 18. 103.1 Trabalhando na linha de comando==============================
 == Quoting=============================================================
 
-A primeira coisa que o shell faz é imterpretar as variáveis, e só 
+A primeira coisa que o shell faz é interpretar as variáveis, e só 
   depois interpreta o comando com o resultado da interpretação da
   variáveis
 
@@ -164,14 +164,14 @@ O comando 'tac' imprime o arquivo de trás para frente
 O comando 'head' mostra o cabeçalho do arquivo
   -n para exibir determinado número de linhas
   -c para exibir até tantos Bytes
-O comando 'tail' mostra as ultimas linhas do arquivo
+O comando 'tail' mostra as últimas linhas do arquivo
   -f mostra o fluxo do final do arquivo, se algo for escrito ele 
     exibirá 
 
 O comando 'less' exibe o arquivo de forma paginada. Ele é a evoulção
   do comando 'more' possuindo mais opções
   o '/' permite procurar palavras
-    n - para procurar a proxima ocorrencial
+    n - para procurar a próxima ocorrencial
     n + shift para procurar para trás
   CTRL + G exibe o status do arquivo
 
@@ -194,7 +194,7 @@ O comando 'sort' serve para ordenar um arquivo
   -k altera o campo de preferencia para ordenamento
   -g ordena como número ao invés de caracteres
 
-O comando 'uniq' mostra os itens unicos de um aquivo, mas é necessario
+O comando 'uniq' mostra os itens únicos de um aquivo, mas é necessario
   que o arquivo esteja ordenado e não tenha linhas que separem os textos
   como uma linha inteira em branco. Muito utilizado em conjunto com o 
   'sort'
@@ -595,7 +595,7 @@ suas configurações
 9) SIGKILL matar abrptamente, não pode ser ingonorado pelo programa
 15) SIGTERM solicita ao processo que finalize, fazendo que ele termine
 20) SIGTSTP equivalente a colocar em background como CTRL + Z
-as sessoes ativas e morre. Sinal padrão do comando 'kill'
+as sessoes ativas e morre.
 *O SIG pode ser otimitido ao especificarmos o nome do sinal
 *Quando digitamos CTRL + <algo> estamos enviando um sinal ao processo
 
