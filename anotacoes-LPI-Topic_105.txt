@@ -42,11 +42,37 @@ Os arquivos /etc/profile e /etc/bash.bashrc são validos para todos os
   usuários. O /etc/profile é referente ao login do usuário no sistema. 
   O /etc/bash.bashrc é referente a cada novo bash aberto pelo usuário.
 
+!!! Toda vez que fazemos um login estamos abrindo um novo shell, mas
+  nem toda vez que abrimos um novo shell estamos fazendo um novo login
+
+!!! o 'rc' no nome do arquivo tem a vez com o novo bash aberto
+
 Os arquivos referentes a um usuário especifico ficam no diretorio /home
   e são os arquivos: ".bash_profile", ".bash_login" e ".profile" são 
   excecutados nesta ordem, se o primeiro existir não será executado o
   segundo. O ".profile" é referente a cada novo login do usuário no 
   sistema. O ".bashrc" é referente a cada novo bash aberto pelo usuario
+
+Sequência de invocação dos arquivos de configuração quando o shell é
+  iniciado em um login iterativo:
+  1. /etc/profile
+        /etc/profile.d/* (1)
+  2. ~/.bash_profile
+  3. ~/.bash_login
+  4. ~/.profile
+        ~/.bashrc (1)
+
+  (1) Esses arquivos não são executados diretamento pelo bash como 
+    parte do login, mas sim indiretamente através de chamadas
+    dentro dos scripts.
+
+Sequência quando o shell é iniciado de maneira iterativa mas sem o
+  login (ao executar um terminal pela interface gráfica):
+  1. /etc/bash.bashrc
+  2. ~/.bashrc
+
+  Os arquivos são executados em sequência, uma configuraão igual é
+    sobrescrita pelo último arquivo executado.
 
 O arquivo ".bash_logout" define o que será feito a cada logout do bash
 
@@ -54,7 +80,7 @@ O arquivo ".input_rc" ou /etc/inputrc permite definir comandos no
   terminal, como comandos, definição de comandos de edição de texto,
   pressionamento de teclas
 
-O diretório /etc/skel é responsável por definir os arquivo e diretorio
+O diretório /etc/skel é responsável por definir os arquivo e diretório
   base ao criarmos um novo usuário no sistema. Todos os arquivos e 
   diretorios ali presentes serão criados no /home para o novo usuário
 
