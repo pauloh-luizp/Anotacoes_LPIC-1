@@ -90,6 +90,9 @@ O diretório /etc/skel é responsável por definir os arquivo e diretório
 
 O script é um arquivo texto com as intruções que queremos executar
 
+Podemos usar o comando 'source <nome_do_script' ou 
+  um '. <nome_do_script>'
+
 O comando 'exec' também pode ser usado para executar um script, porém
   ele fecha o bash atual após o termino da execução
 
@@ -108,6 +111,7 @@ Ex:
   Dentro do script:
     $0 - nome do script
     $1 a $9 - os parâmetros recebidos
+      Para mais de 9 parâmetros usamos o número entre {}:  ${10}, ${11}
     $# - numero de parâmetro recebido pelo script
 
 Usamos o comando 'read' para ler uma entrada do usuário
@@ -118,6 +122,23 @@ Podemos atribuir um comando à uma variável usando a crase "`" ou "$()"
 Ex:
   VAR1=`ls -la`
   VAR2=$(cd ~)
+
+O comprimento de uma variável pode ser obtido utilizando o # entre {} 
+  antes do nome da variável
+Ex:
+  echo ${#variavel}
+
+Podemos criar variáveis de matriz (array) unidimensionais usando o 
+  comando 'declare' com o parâmetro -a:
+Ex:
+  declare -a SIZES
+  SIZES=( 1048576 1073741824)
+  echo ${SIZES[0]}
+
+Usando o '@' ou '*' obteremos o número total de elementos da matriz
+  echo ${#SIZES[@]}
+  echo ${#SIZES[*}}
+
 
 152. 105.2 Customização e Uso do Ambiente Shell========================
 == if e case===========================================================
@@ -139,9 +160,9 @@ Ex:
   verdadeiro
 
 #######
-O comando 'test':
+O comando 'test': pode ser 'test' ou usamos colchetes [ ] 
 
-#O comando test é usado para criar uma condição, com as opções para 
+O comando test é usado para criar uma condição, com as opções para 
   testar valores numericos:
   -eq   igual(equal)
   -ne   diferente(not equal)
@@ -220,10 +241,12 @@ done
 
 
 for i in $(cat arquivo.txt) !!!! considera cada campo separado por ' \t\n'
-do                          !!!! chamado de IFS (inter fild separator)
+do                          !!!! chamado de IFS (Input Field Separator)
   echo "O valor atual é $i
 done
 
+Temos uma variável de ambiente chamada $IFS (Input Field Separator)
+  que contém os delimitadores de caracteres utilizados pelo sistema
 # Podemos alterar o separador de campos fazendo:
 
 OLDIFS=$IFS
