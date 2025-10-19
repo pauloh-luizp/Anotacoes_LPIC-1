@@ -6,26 +6,53 @@ TOPICO 106: INTERFACES DE USUÁRIO E DESKTOPS===========================
 O ambinete X11 é uma implementação da interface X da x.org foundation
 O gnome, xde, xfce são gerenciadores de janelas
 O X é um servidor de interface gráfica, todos os programas que rodam
-em cima do servidor X são clientes do servidor X
+  em cima do servidor X são clientes do servidor X
 
 O arquivo de configuração fica em /etc/X11/xorg.conf
 Por padrão esse arquivo não vem nas distribuições
 Para gerar esse aquivo temos que ir para outro terminal que não seja
-gráfico. CTRL + ALT + F<1-6>, iserimos o comando
-'systemctl isolate multi-user.target' para parar o X
-damos o comando 'xorg -configure' o arquivo gerado vai para o /root
-e o copiamos para /etc/X11/xorg.conf
+  gráfico. CTRL + ALT + F<1-6>, iserimos o comando
+  'systemctl isolate multi-user.target' para parar o X
+  damos o comando 'xorg -configure' o arquivo gerado vai para o /root
+  e o copiamos para /etc/X11/xorg.conf
+Nesse arquivos temos diversas seções que começam com Section "Nome"
+  e terminam com EndSection
+A seção "Files" indica os modulos e as fontes utilizadas, podemos
+  também ter um servidor de fonte remotamente chamados de xfs (X fonts
+  server)
+A seção "Module" indica os módulos dinâmicos a serem carregados.
+A seção "InputDevice" são referente principalmente ao teclado e mouse
+  o Identifier e o Driver são parâmetros obrigatórios para especifiar
+  o dispositivo
+A seção "Device" refere a configuração da placa de vídeo também sendo
+  obrigatório informar o Identifier e o Driver
+A seção "Monitor" contém as configurações específicas do monitor
+  utilizado
+A seção "Screen" é a combinação do monitor e placa de vídeo
+A seção "ServerLayout" contém outras definições do X, associado 
+  principalmente as informações do Screen e InputDevices
+
+O comando 'startx' inicia a o servidor X sem a parte de login.
 
 
 162. 106.1 Instalar e configurar X11===================================
 == Uso da variável DISPLAY=============================================
+
+A variável DISPLAY indica onde que as janelas serão exibidas
+  hostname:displaynumber.screennumber
+Podemos iniciar um aplicativo em uma tela especifica ao mexer na 
+  variável DISPLAY
+Ex:
+  DISPLAY=0.1 firefox &
 
 Para configurar a variavel DISPLAY para que o programa solicitado abra
 em outra maquina:
   export DISPLAY="<IP>:0.0"
 
 Temos que liberar na outra máquina:
-  'xhost +<IP>' ou 'xhost +'
+  'xhost' para verificar o status de controle de acesso
+  'xhost +<IP>' para liberar um IP especifico
+  ou 'xhost +' para desabilitar o controle de entrada
   Configuramos também no aquivo
   /usr/share/lightdm/lightdm.conf.d/50-xserver-command.conf
   e adicionamos uma linha:
@@ -70,14 +97,39 @@ Display Manager (DM)
 Todos os usuários tem em seu diretorio home o arquivo
   .xsesion-erros que é um aquivo de log do X
 
+Os arquivos de configuração ficam em
+  /etc/X11/xorg.conf
+  /etc/X11/xorg.conf.d/
+As aplicações criam as configurações especificas delas em
+  /usr/share/X11/xorg.conf.d
+
+166. 106.2 Desktops Gráficos===========================================
+== Desktops gráficos===================================================
 
 
-166. 106.1 Desktops Gráficos===========================================
-== Configuração de mouse, teclado, tela e aplicações===================
+GNOME 3 utiliza a biblioteca gráfica GTK e tem o Mutter como Window
+  Manager
+
+KDE utiliza a biblioteca gráfica Qt e tem o KWin como Window Manager
+  poder ser usado no Linux, FreeBSD, Solaris, Windows e Mac OS X
+
+MATE derivado do GNOME 2 utiliza biblioteca GTK e tem o marco como
+  Windows Manager
+
+Xfce utliza a biblioteca GTK e xfwm como Windows Manager
 
 Protocolos para acesso remoto aos ambientes gráicos
-  XDMCP
+  XDMCP (X Display Manager Control Protocol)
+    Protocoloco nativo do X
+    Implementado pelo Display Manager
+    Não implementa segurança/criptografia
+    Não faz compressão
     'Xorg -terminate -query <IP> :1'
-  VNC
-  SPICE
-  RDP
+  VNC (Virtual Networking Computing)
+    Utiliza o protocolo RFB
+  SPICE (Simple Protocol for Independent Computing Environment)
+  RDP (Remote Desktop Protocol)
+    Utilizado para o Microsoft Terminal Service
+
+106.3 Acessibilidade===================================================
+=======================================================================
