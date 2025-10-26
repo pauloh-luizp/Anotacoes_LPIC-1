@@ -273,6 +273,9 @@ pt - Definicao do idioma
 BR - Pais
 UTF-8 - Codificacao
 
+Ordem de precedência
+  LANGUAGE > LC_ALL > LC_* > LANG
+
 A variável LC_ALL sobrepõe todas as outras
 
 Colocando a variável de ambiente LANG=C faz com que os scripts não 
