@@ -19,11 +19,12 @@ Arquivo com as senhas dos usuários:
   Cada atributo está também separado por ':'
   1° Nome do usuário, 2° Hash da senha do usuário, 3° Quando a conta
   irá expirar, 4° Numero minimo de dias para trocar a senha,
-  5° Numero maximo de dias antes da senha expirar, 7° Quantos dias 
-  antes de enviar uma notificação da troca de senha, 8° Numero de 
+  5° Numero maximo de dias antes da senha expirar, 6° Quantos dias 
+  antes de enviar uma notificação da troca de senha, 7° Numero de 
   dias após a expiração da senha em que ela continuará válida
-  9° Data que a conta expirou. 
+  8° Data que a conta expirou.
     O numero é a quantidade de dias passados desde 1-1-1970
+  9° Campo reservado
 
 Arquivo com os grupos:
   /etc/group
