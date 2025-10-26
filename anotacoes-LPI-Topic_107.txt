@@ -112,6 +112,15 @@ Usamos o comando 'usermod -g' para definir o grupo padrão e '-G' para
   -d para forjar a data da alteração da senha, -d0 para forçar a troca
     de senha no proximo login. Data no formato de ANO-MES-DIA
   -E configurar a expiracao da conta. -1 para never
+  Ex:
+    chage -E -1 <usuario>
+  -i define o número de dias entre a ta de expiração da senha
+    e a desativação da conta
+  -m número minimo de dias entre as troca de senha
+  -M máximo de dias para a alteração de senha
+  -W define a partir de quantos dias antes da expiração da senha o 
+    usuário receberá avisos
+
 
 179. 107.2 Agendamento de tarefas no Linux=============================
 == O processo cron e os agendamentos do sistema========================
@@ -130,12 +139,19 @@ Configurações para fazer os agendamentos no cron
     2° Hora que o comando vai ser executado
     3° Dia do mês
     4° Mes do ano
-    5° Dia da semana, 0 e 7 é domingo, 1 segunda e 6 sabado
+    5° Dia da semana, 0 e 7 é domingo, 1 segunda e 6 sábado
     8° Usuário que irá executar o comando
     9° O comando
       !!! usando uma '/' temos que a cada tanto tempo execute
-  
-  No cron.d temos os agendamentos
+
+Temos o comando 'run-parts' que é um comando que executa tudo que
+  está em um diretório
+
+O * significa toda hora
+O - significa um intervalo
+
+No cron.d temos os agendamentos
+
 
 180. 107.2 Agendamento de tarefas no Linux=============================
 == O comando crontab e Arquivos de controle============================
@@ -146,7 +162,7 @@ Cada usuário tem os agendamentos individuiais
     -u para especificar o usuario
     -e editar agendamentos
     -r para apagar a crontab
-    crontab -u <usuario> <nome do arquivo> 
+    crontab -u <usuario> <nome do arquivo> ou crontab <nome_do_arquivo>
       para importar uma crontab de um arquivo
 
 A crontab do usuário fica gravada em /var/spool/cron/crontabs ou em
@@ -169,13 +185,18 @@ O 'at' permite agendar uma execução apenas uma vez, em tal hora ou dia
       echo "Hora do café"
       CTRL + D
   Ex:
-    at 02:20pm 05202023
+    at 02:20pm 05202023      MES_DIA_ANO
       echo ok!
+      CTRL + D
 
-  Conferindo os jobs: 'atq'
-  Removendo os jobs: 'atrm <ID do Job>'
-  Permitir ou negar acesso ao at
+Conferindo os jobs: 'atq' ou com o 'at -l'
+
+Removendo os jobs: 'atrm <ID do Job>'
+
+Permitir ou negar acesso ao at
     /etc/at.allow e /etc/at.deny
+  Se não tivermos nenhum dos dois arquivos somente o root poderá
+  utilizar o at
 
 
 183. 107.2 Agendamento de tarefas no Linux=============================
@@ -184,6 +205,7 @@ O 'at' permite agendar uma execução apenas uma vez, em tal hora ou dia
 'systemctl list-timers' mostra as execuções programadas
 UNIT - O timer
 ACTIVATES - O servico
+Podemos verificar usando o comando 'systemctl list-units --type=timer
 
 man systemd.timer
 man systemd.time
@@ -192,10 +214,14 @@ man systemd.time
 Ex:
   OnCalendar=Mon..Fri 2023-05-12 6..18:00,30:Segundos
   !!! No dia 12/05/23 6 as 18hs a cada 30min sendo segunda a sexta
+  !!! Para sistemas Debian based podemos usar Mon..Fri e no RedHat
+    temos que usar Mon-Fri
   RandomizedDelaySec=60 
   Persisten=true
   !!! Se rodar manualmente será registrado
   !!! Para termos um horario preciso utilizamo so AccuracySec
+  AccuracySec=100ms
+  !!! Paa que a execução ocorra no segundo especificado
 
 /lib/systemd/system/apt-daly-upgrade.service
 
@@ -211,22 +237,24 @@ Ex:
   systemd-run --on-active="10h 30m" --time-property=AccuracySec=1ms
   /bin/touch /tmp/exemplo-run.txt
 
+Podemos ver os detalhes usando journalctl -u <unit>.timer
 
 185. 107.3 Localização e Internalização================================
 == Configuracao de horario e fuso======================================
 
 O Linux sempre grava em formato UTC e para o usuário ele converte para
-o usuário atual
-'timedatectl'
+  o usuário atual
+
+'timedatectl' mostra a data e hora do sistema com mais informações
 
 Arquivo de configuração /etc/localtime e /etc/timezone
 Arquivo com os fusos /usr/share/zoneinfo
 
 'tzselect' para escolher um timezone, no final da escolha será mostrado
-o nome do time zone
+  o nome do time zone
 
 Podemos usar a variável TZ para configurar um timezone para a nossa
-seção atual
+  seção atual
 Ex:
   export TZ=America/Chicago
   unset TZ 
@@ -247,12 +275,12 @@ UTF-8 - Codificacao
 
 A variável LC_ALL sobrepõe todas as outras
 
-colocando a variável de ambiente LANG=C faz com que os scripts não 
-tenham o seu funcionamento alterado devido a configurações de 
-localidade configuradas na máquina
+Colocando a variável de ambiente LANG=C faz com que os scripts não 
+  tenham o seu funcionamento alterado devido a configurações de 
+  localidade configuradas na máquina
 
 Converter arquivos de um tipo de codificação de caracteres para outro
-tipo
+  tipo
 Ex:
   iconv -f <formato atual> <formato que queremos> <nome do arquivo>
 
