@@ -14,7 +14,7 @@ O comando 'date' exibe a data
 
 O comando 'hwclock' exibe o horário da BIOS
   -w ou --systohc pega a hora do sistema e configura no relogio do hw
-  -s pega a hora do hardware e configura no relogio do sw
+  -s ou --hctosys pega a hora do hardware e configura no relogio do sw
   --set --date "12/01/2017 14:00"  para configurar a data e hora
 
 
@@ -27,13 +27,18 @@ Temos que instalar o serviço de NTP
 
 Utiliza o UDP na porta 123
 Arquivo que mostra as portas de cada protocolo e serviços /etc/services
+
 O NTP pode ser como um Deamon ou seja, como um servidor NTP. 
 O arquivo de configuração do NTP fica em /etc/ntp.conf
   driftfile - aquivos de logs da sincronia do horário
-  pool / server  - servidores que a maquina irá conectar
+  pool / server  - servidores que a máquina irá conectar
+
+Com a depreciação do NTP ele foi substiuido pelo NTPSec que é mais
+  seguro. Os arquivos de configuração fciam em /etc/ntpsec/ntp.conf
 
 A pool dos ntps www.pool.ntp.org
-Verificar as configurações
+
+Verificar as configuraçõesi
   'ntpq -p'
 
 Atulização manual do NTP
@@ -46,8 +51,8 @@ Atulização manual do NTP
 193. 108.1 Manutenção do horario do sistema============================
 == chrony e timedatectl================================================
 
-O chrony é uma implementação do NTP, funcionando bem em redes intermi_
-tentes e ambiente instatáveis. As configurações ficam em:
+O chrony é uma implementação do NTP, funcionando bem em redes 
+  intermitentes e ambiente instatáveis. As configurações ficam em:
   /etc/chrony/chrony.conf
 
 O Daemon do chrony é o chronyd 
@@ -71,7 +76,7 @@ systemd-journal - sistema de gerenciamento de logs do systemd
 O padrão de hoje é o rsyslog e o systemd-journal trabalhando juntos
 
 Configurando o rsyslog: /etc/rsyslog.conf é o arquivo de configuração
-principal do rsyslog. 'man rsyslog.conf'
+  principal do rsyslog. 'man rsyslog.conf'
   Os modules serevem para integrar com outros geradores de logs
   www.rsyslog.com
 
@@ -126,10 +131,12 @@ crirarmos os nossos proprios logs
 == logrotate===========================================================
 
 Rotacionamento de logs serve para apagar os logs mais antigos.
+
 Os registro mais antigos são compactados .n°.gz e o ultimo é apagado
-e os mais recente são renomeados. 
+  e os mais recente são renomeados. 
+
 As configurações são feitas em /etc/logrotate.conf e outra parte das
-configurações estão em /etc/logrotate.d/rsyslog ou em inetutils-syslogd
+  configurações estão em /etc/logrotate.d/rsyslog ou em inetutils-syslogd
 Ex:
   /var/log/syslog {
     rotate 7  // rotacione e mantenha os ultimos 7
@@ -143,7 +150,7 @@ Ex:
     endscript
   }
   
-O logrotate é executado pela chron
+O logrotate é executado pela cron
   A configuração fica em /etc/cron.daily
 
 
@@ -167,11 +174,11 @@ O comando 'journalctl' permite ler os logs
   --since="1 hour ago" todos os logs de 1 hora atrás
 
 As aplicações podem se comunicar atraves de sockets. Na configuração
-do socket temos o parâmetro de ListemDatagram que indica o que o 
-serviço está escutando
+  do socket temos o parâmetro de ListemDatagram que indica o que o 
+  serviço está escutando
 
 O comando 'systemd-cat' manda a saida de um comando direto para o 
-journal fazendo:
+  journal fazendo:
   Ex:
     'systemd-cat ls -l rsyslog.conf'
     'echo "Mensagem de Teste" | systemd-cat -p warning -t [TAG]'

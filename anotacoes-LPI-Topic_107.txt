@@ -107,6 +107,7 @@ Usamos o comando 'usermod -g' para definir o grupo padrão e '-G' para
 'groups' lista os grupos a qual o usuário faz parte
 
 'getent <informações> <usuario>' obtem informação sobre o usuário
+  As infromações ficam em /etc/nsswitch.conf
 
 'chage' mostra as propriedades do usuário
   -l lista todas as propriedades
