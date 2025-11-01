@@ -215,7 +215,7 @@ O comando 'mail' permite mandar e ler mensagens
   -
   Ex:
     mail -s "assunto" <usuario>
-    podemos digitar o conteudo usando o eco
+    podemos digitar o conteudo usando o echo
     echo "mensagen 2" | mail -s "mensagem 2 echo" paulo
 
 O arquivo com as mensagem ficam em /var/spool/mail
@@ -245,7 +245,11 @@ Adicionando uma impressora:
   Selecionar o driver --> CONTINUAR --> Selecionar o padrão
 
 As configurações do CUPS ficam em /etc/cups
+  As configurações mais gerais estão em /etc/cups/cupsd.conf
 As impressoras do CUPS ficam em /etc/cups/printers.conf
+
+As filas de impressão podem ser visualizadas pelos comandos 
+  'lpq' e 'lpstat'
 
 O comando 'cupsenable' inicia uma impressora desativada
 O comando 'cupsdisable' para uma impressora
@@ -260,6 +264,7 @@ O comando 'cupsreject' instrui o sistema regeitar jobs para impressora
 O comando 'lpinfo' lista os dispositivos de impressão e os drivers
   -v dispositivos que o CUPS está identificado
   -m mostra os drivers disponivies já instalados
+    Os drivers vêm do pacote foomatic
 
 O comando 'lpstat' mostra o status das impressoras
   -a mostra o status de todas as impressoras
@@ -293,9 +298,12 @@ Ex:
   lpr /etc/passwd -#2 -P <nome da impressora>
   -#2 para quantidade de copias
 
+A fila de impressão pode ser visualizada com 
+  'lpq -P <nome da impressora>
+
 Os arquivos de impresão ficam em /var/spool/cups
 Os logs do cups ficam em /var/log/cups
 
-O comando 'lprm' limpa itens na fila de impressão
-  -P especifica a impressora
+O comando 'lprm' limpa itens na fila de impressão do usuario corrente
+  -P especifica a impressora e limpa a ultima impressão
   - remove todos o jobs de impressão
