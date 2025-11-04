@@ -34,7 +34,7 @@ O arquivo de configuração do NTP fica em /etc/ntp.conf
   pool / server  - servidores que a máquina irá conectar
 
 Com a depreciação do NTP ele foi substiuido pelo NTPSec que é mais
-  seguro. Os arquivos de configuração fciam em /etc/ntpsec/ntp.conf
+  seguro. Os arquivos de configuração ficam em /etc/ntpsec/ntp.conf
 
 A pool dos ntps www.pool.ntp.org
 
@@ -83,8 +83,9 @@ Configurando o rsyslog: /etc/rsyslog.conf é o arquivo de configuração
 As configurações ficam em /etc/rsyslog.d/*.conf com o 50-default.conf
   sendo o principal deles
 O padrão será:
-  facility.priority         /onde/sera/registrado, usuário, 
+  facility.priority         /onde/sera/registrado, :omusrmsg:usuário, 
                             @ip do servidor remoto
+                            @ para UDP e @@ para TCP
 
   facility - quem está gerando aquele log
   priority - o nivel de prioridade
@@ -184,7 +185,7 @@ O comando 'systemd-cat' manda a saida de um comando direto para o
     'echo "Mensagem de Teste" | systemd-cat -p warning -t [TAG]'
 
 Verificar o tamanho dos logs: 
-  'du -sh .'
+  Em /var/log/journal usamos o comando 'du -sh .'
   'journalctl --disk-usage'
 
 Limpar os espaços, removendo os arquivos de journal archiver:
@@ -220,13 +221,13 @@ O comando 'mail' permite mandar e ler mensagens
 
 O arquivo com as mensagem ficam em /var/spool/mail
 
-Redirecionamento de mensagens em editamos o arquivo /etc/aliases, apos
-editar rodamos 'newaliases'
+Redirecionamento de mensagens em editamos o arquivo /etc/aliases, após
+  editar rodamos 'newaliases'
 Os usuários podem criar no proprio home um arquivo ".forward" para
-redirecionar e-mails
+  redirecionar e-mails
 
-Verificar a fila do servidor de e-mail utilizamos o comando 'mailq' ou
-'sendmail -bp' 'postqueue -f'
+Verificar a fila do servidor de e-mail utilizamos o comando 
+  'mailq' ou 'sendmail -bp' 
 
 
 204. 108.4 Gerencimento de impressoras=================================
@@ -256,7 +257,7 @@ O comando 'cupsdisable' para uma impressora
   -c cancela todos os jobs da impressora
   -r especifica uma mensagem com a razão do comando
 O comando 'cupsaccept' instrui o sistema aceitar jobs para impressora
-O comando 'cupsreject' instrui o sistema regeitar jobs para impressora
+O comando 'cupsreject' instrui o sistema rejeitar jobs para impressora
 
 205. 108.4 Gerencimento de impressoras=================================
 == Comandos lpadmin, lpstat, lpinfo, lpstat============================
@@ -282,6 +283,7 @@ O comando 'lpadmin' permite adiconar uma impressora
   -E para tornar a impressora disponivel assim que configurada
   -v para indicar o device obitido pelo comando 'lpinfo -v'
   -m para indicar o driver obtido pelo comando 'lpinfo -m'
+     normalmente usamos everywhere ao invés de expecificar o driver
   -x para remover a impressora
 
 O comando 'lpoptions' mostra as propriedades e para alterar as config
