@@ -6,15 +6,15 @@ TOPICO 110: SEGURANÇA==================================================
 O comando 'su' (switch user) serve para trocar de usuário
 
 A diferença entre usar 'su' e 'su -' é que ao usar 'su' ele não executa
-o /etc/profile e o /profile são iniciando as variáveis definidas para 
-o usuário ao utlizar o 'su -' funciona como um novo login
+  o /etc/profile e o /profile são iniciando as variáveis definidas para 
+  o usuário ao utlizar o 'su -' funciona como um novo login
 
-O comando 'su -C <comando qualquer>' permite executar o comando como 
-usuário root
+O comando 'su -c <comando qualquer>' permite executar o comando como 
+  usuário root
 
 O comando 'sudo' permite que executamos um comando sem ter a senha 
-do root, pedindo então a senha do usuário atual, mas requer que o 
-usuário tenha permissão igual ao do root configurado no arquivo sudoers
+  do root, pedindo então a senha do usuário atual, mas requer que o 
+  usuário tenha permissão igual ao do root configurado no arquivo sudoers
 
 O arquivo de configuração dos sudoers fica em /etc/sudoers
 Os "%" no arquivo indicam um grupo
@@ -36,18 +36,21 @@ O comando 'who' mostra os usuários logados naquele momento
   -a exibe mais detalhes. LOGIN informa que o terminal não está em uso
 
 O comando 'w' mostra os usuários logados e o que eles estão fazendo 
-no momento. JCPU mostra quanto de tempo de CPU no geral e PCPU o tempo
-de uso do processo atual
+  no momento. JCPU mostra quanto de tempo de CPU no geral e PCPU o 
+  tempo de uso do processo atual
 
 O comando 'last' mostra o histórico de login da máquina
   As informações são obtidas pelos arquivos:
     /var/log/wtmp (para todos os logins) e 
     /var/log/btmp (para os logins bloqueados)
   -f <nome do arquivo wtmp ou btmp> consulta arquivos antigos
+
 O comando 'lastb' mostra as tentativas de login dos usuários
   
 O comando 'lastlog' busca no /etc/passwd e mostra quando o usuário fez
-login pela ultima vez
+  login pela ultima vez
+  -u <usuário> para ver o último login do usuário
+  
 
 233. 110.1 Realizar tarefas de Segurança do Sistema====================
 == passwd, usermod e chage=============================================
@@ -72,7 +75,7 @@ O comando 'usermod' modifica algumas propriedades do usuário
 == find, ulimit, limits.conf===========================================
 
 's' nas informações de permissão do arquivo significa SUID e que 
-qualquer usuário pode utilizar aquele comando
+  qualquer usuário pode utilizar aquele comando
 
 Utiliazando o 'find' para encontrar os aquivos com permissão "s"
 Ex:
@@ -83,24 +86,24 @@ Ex:
     -ls para listar
 
 Utilizando o 'find' para encontrar arquivos que não há usuários 
-associados a ele
+  associados a ele
 Ex:
   find / -path /proc -prune -o -nouser
     -path /proc -prune é para não ser feita a busca no diretorio /proc
     -nouser para os que tiverem sem usuário
-    -group para os que tiverem sem grupo
+    -nogroup para os que tiverem sem grupo
 
 O comando 'ulimit' permite configurar limites de recurso por usuário
-os limites configurados não ficarão fixos, tendo efeito somente na
-sessão atual do usuário
+  os limites configurados não ficarão fixos, tendo efeito somente na
+  sessão atual do usuário
   -a para exibir os limites configurados
   -u exibe a quantidade maxima de processos permitidos
   -H para definir um limite Hard, o máximo de processos
   -S para definir um limite Soft, o minimo de processos
 
 O arquivo /etc/security/limits.conf permite configurar permanentemente
-os limites de recursos por usuário. A definição funciona da seguinte 
-forma:
+  os limites de recursos por usuário. A definição funciona da seguinte 
+  forma:
 #<domain>       <type>    <item>    <value>
 
 domain - para quem essa regra será aplicada
@@ -115,8 +118,8 @@ value - valor
 O comando 'netstat' exibe as conexões ativas
 
 O comando 'lsof' lista os arquivos abertos e uma conexão é também 
-considerada um arquivo aberto, mostando também todas as bibliotecas
-que os programas estão utilizando
+  considerada um arquivo aberto, mostando também todas as bibliotecas
+  que os programas estão utilizando
   -i exibe somente as conexões de redes abertas
   : para especificar uma porta
 
@@ -127,7 +130,7 @@ O comando 'nmap' escaneia as portas buscando quais estão abertas
   -O para buscar qual os sistema operacional
 
 O comando 'fuser' permite buscar qual processo está a utilizar 
-determinada porta
+  determinada porta
   -u para exibir o usuario dono do processo
   -v para exibir maiores detalhes
 
@@ -142,11 +145,11 @@ Ex:
   systemctl disable <nome-do-servico>
 
 Se estivermos utilizando o init o systemd os arquivos /etc/inittab 
-e /etc/rc*
+  e /etc/rc*
 Nos arquivos /etc/rc* tem os links comçando com S de start apontando
-para os processos, K para baixar
+  para os processos, K para baixar
 Se não quisermos que o serviço rode podemos deletar o link ou alterar
-o nome de S para K
+  o nome de S para K
 Podemos também entrar no /etc/init.d e retirar a permissão de execução
 
 
@@ -166,16 +169,16 @@ O arquivo de configuração fica em /etc/inetd.conf
 7° processo do programa que será protegido pelo TCP Wrapper
 
 O TCP Wrapper é uma forma em que o Linux coloca um processo dentro do 
-outro, o processo protege o processo do programa, conexão e serviço.
+  outro, o processo protege o processo do programa, conexão e serviço.
 Os elementos de segurança são referentes aos arquivos /etc/hosts.allow
-e /etc/hosts.deny que definem quais maquinas pode ou não usar os 
-servicos protegidos pelo TCP Wrapper
+  e /etc/hosts.deny que definem quais maquinas pode ou não usar os 
+  servicos protegidos pelo TCP Wrapper
 O TCP Wrapper consulta primeiro o hosts.allow e depois hosts.deny
 
 O xinetd ainda utiliza o TCP Wrapper. Os arquivos de configuração são:
-/etc/xinetd.conf e /etc/xinetd.d
+  /etc/xinetd.conf e /etc/xinetd.d
 Podemos desablitar, bloquear ou liberar acesso ao processo alterando
-nos aquivos presente em /etc/xinetd.d
+  nos aquivos presente em /etc/xinetd.d
 As regras encontradas no TCP Wrapper tem prioridade sobre as do xinetd
 
 
@@ -183,15 +186,15 @@ As regras encontradas no TCP Wrapper tem prioridade sobre as do xinetd
 == Systemd Socket======================================================
 
 O systemd socket permite que dois processo comuniquem entre si, entre
-duas máquinas remotas
+  duas máquinas remotas
 
 O comando 'systemct list-units --type=socket' mostra os sockets ativos
-no momento
+  no momento
 Em /lib/systemd/system/*.socket contem os sockets do systemd
 Os serviços que esses sockets chamam tem o nome como <servico>@.service
 Ao ativarmos um socket com 'systemctl start <servico>.socket' o systemd
-quem passa a ouvir as conexões, mas as conexões quando estabelecidas
-serão estabelecidas pelo proprio servico
+  quem passa a ouvir as conexões, mas as conexões quando estabelecidas
+  serão estabelecidas pelo proprio servico
 
 243. 110.3 Protegendo daddos com Encriptação===========================
 == Conceitos de criptografia e SSH=====================================
@@ -206,7 +209,7 @@ Tem como objetivos:
 o SSH (Secure Shell) é um protocolo de criptografia de rede
 Cria um canal seguro de comunição entre 2 hosts, cliente-servidor
 Utiliza chaves assimétricas, ou seja, um conjunto de chaves públicas e
-privadas
+  privadas
 
 Os arquivos de configuração do SSH cliente ficam em /etc/ssh/ssh_config
 
@@ -226,9 +229,9 @@ Realizando uma conexão ssh utilizando senha:
     utilizar o mesmo nome do usuário que estamos locamente
 
 No diretório home temos um diretorio ".ssh" e um arquivo known_hosts
-que contem as chaves publicas. Se a maquina que estamos tentando 
-conectar mudar a sua chave publica termos problemas e será necessário
-editar esse aquivo e remover a chave manualmente
+  que contem as chaves publicas. Se a maquina que estamos tentando 
+  conectar mudar a sua chave publica termos problemas e será necessário
+  editar esse aquivo e remover a chave manualmente
 
 ###
 Conexão ssh utilizando chaves:
@@ -295,7 +298,7 @@ Para receber:
 
 GPG - GNU PRIVACY GUARD
 Utilizado para criptografar arquivos, e-mails, assinar arquivos e email
-e transmitir de forma segura
+  e transmitir de forma segura
 O GPG é uma implementação GNU do PGP
 
 Gerando chaves publicas e privadas:
@@ -341,6 +344,6 @@ Verificando um arquivo assinado:
 == gpg-agent===========================================================
 
 O gpg-agent é o deamon do gpg que armazena as chaves privadas em 
-memoria
+  memória
 
 A variavel de ambiente GPG_AGENT_INFO indica um arquivo de socket
