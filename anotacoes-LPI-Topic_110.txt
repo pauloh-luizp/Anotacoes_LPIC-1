@@ -78,6 +78,16 @@ O comando 'usermod' modifica algumas propriedades do usuário
   qualquer usuário pode utilizar aquele comando
 
 Utiliazando o 'find' para encontrar os aquivos com permissão "s"
+Os valores para a opção -perm podem ser passados sozinhos ou
+  precididos por travessão - ou barra / em que cada um tem um 
+  significado:
+  -perm <valor-numerico> ou -perm <valor-simbolico>
+    encontra arquivos com a permissão especial exclusivamente
+  -perm -<valor-numerico> ou -perm -<valor-simbolico>
+    encontra arquivos com a permissão especial e outras permissoes
+  -perm /<valor-numerico> ou -perm /<valor-simbolico>
+    encontra arquivos com qualquer uma das permissões especiais
+    (e outras permissões)
 Ex:
   find / \( -perm -2000 -o -perm -4000 \) -ls
     -4000 para procurar pelo SUID
@@ -122,6 +132,8 @@ O comando 'lsof' lista os arquivos abertos e uma conexão é também
   que os programas estão utilizando
   -i exibe somente as conexões de redes abertas
   : para especificar uma porta
+Ex:
+  lsof -i @IP:smtp
 
 O comando 'nmap' escaneia as portas buscando quais estão abertas
   localhost para buscar na máquina local
@@ -133,7 +145,8 @@ O comando 'fuser' permite buscar qual processo está a utilizar
   determinada porta
   -u para exibir o usuario dono do processo
   -v para exibir maiores detalhes
-
+Ex:
+  fuser -u 25/tcp
 
 237. 110.2 Configurar Seguranca do Host================================
 == shadow, nologin e como desabilitar serviços=========================
