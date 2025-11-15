@@ -151,7 +151,11 @@ Ex:
 237. 110.2 Configurar Seguranca do Host================================
 == shadow, nologin e como desabilitar serviços=========================
 
+Em sistemas antigos tinhamos o comando 'pwconv' que converte os 
+  usuários de e para o shadow
+
 Se criarmos o arquivo /etc/nologin somente o root consigirá fazer login
+Com o /bin/false no campo de shell o usuário não conseguirá fazer login
 
 Desabilitando serviços:
 Ex:
@@ -167,7 +171,7 @@ Podemos também entrar no /etc/init.d e retirar a permissão de execução
 
 
 238. 110.2 Configurar Seguranca do Host================================
-== inetd e TCP Wrapper=================================================
+== inetd, xinetd e TCP Wrapper=========================================
 
 Alguns serviços mais simples são disponibilizado pelo inetd e xinetd
 O arquivo de configuração fica em /etc/inetd.conf
@@ -184,14 +188,17 @@ O arquivo de configuração fica em /etc/inetd.conf
 O TCP Wrapper é uma forma em que o Linux coloca um processo dentro do 
   outro, o processo protege o processo do programa, conexão e serviço.
 Os elementos de segurança são referentes aos arquivos /etc/hosts.allow
-  e /etc/hosts.deny que definem quais maquinas pode ou não usar os 
+  e /etc/hosts.deny que definem quais máquinas pode ou não usar os 
   servicos protegidos pelo TCP Wrapper
 O TCP Wrapper consulta primeiro o hosts.allow e depois hosts.deny
+Geralmente liberamos o que queremos no .allow e bloqueamos todo o 
+  resto no .deny
 
 O xinetd ainda utiliza o TCP Wrapper. Os arquivos de configuração são:
   /etc/xinetd.conf e /etc/xinetd.d
-Podemos desablitar, bloquear ou liberar acesso ao processo alterando
-  nos aquivos presente em /etc/xinetd.d
+Podemos desabilitar, bloquear ou liberar acesso ao processo alterando
+  nos aquivos presentes em /etc/xinetd.d. As regras dos arquivos 
+  hosts.allow e hosts.deny tem precedência sobre as regras do diretório
 As regras encontradas no TCP Wrapper tem prioridade sobre as do xinetd
 
 
@@ -203,13 +210,13 @@ O systemd socket permite que dois processo comuniquem entre si, entre
 
 O comando 'systemct list-units --type=socket' mostra os sockets ativos
   no momento
-Em /lib/systemd/system/*.socket contem os sockets do systemd
+Em /lib/systemd/system/*.socket contém os sockets do systemd
 Os serviços que esses sockets chamam tem o nome como <servico>@.service
 Ao ativarmos um socket com 'systemctl start <servico>.socket' o systemd
   quem passa a ouvir as conexões, mas as conexões quando estabelecidas
-  serão estabelecidas pelo proprio servico
+  serão estabelecidas pelo proprio serviço
 
-243. 110.3 Protegendo daddos com Encriptação===========================
+243. 110.3 Protegendo dados com Encriptação============================
 == Conceitos de criptografia e SSH=====================================
 
 A criptografia permite enviar os dados de maneira segura
@@ -227,6 +234,7 @@ Utiliza chaves assimétricas, ou seja, um conjunto de chaves públicas e
 Os arquivos de configuração do SSH cliente ficam em /etc/ssh/ssh_config
 
 Instalando o servidor ssh: 'apt-get install openssh-server'
+Os arquivos de configuração do cliente SSH estão /etc/ssh/ssh_config
 Os arquivos de configuração do servidor SSH estão /etc/ssh/sshd_config
 As chaves publicas e privadas estão no diretorio /home/usuario/.ssh
   A chave privada tem permissão 600 e as publicas 611
@@ -240,11 +248,14 @@ Realizando uma conexão ssh utilizando senha:
   ssh -l <nome-usuario-destino> <IP-host-remoto>
     Se não especificarmos o nome de usuário de destino, o ssh irá 
     utilizar o mesmo nome do usuário que estamos locamente
+  Com a opção -i podemos especificar um arquivo de chave 
+    privada espeficio
+  -v para verbose
 
-No diretório home temos um diretorio ".ssh" e um arquivo known_hosts
-  que contem as chaves publicas. Se a maquina que estamos tentando 
-  conectar mudar a sua chave publica termos problemas e será necessário
-  editar esse aquivo e remover a chave manualmente
+No diretório home temos um diretório ".ssh" e um arquivo known_hosts
+  que contém as chaves publicas. Se a máquina que estamos tentando 
+  conectar mudar a sua chave pública teremos problemas e será necessário
+  editar esse arquivo e remover a chave manualmente
 
 ###
 Conexão ssh utilizando chaves:
@@ -255,22 +266,27 @@ Temos que gerar as chaves do ssh fazendo:
    -b quantidade de bits da chave
   Podemos mudar o nome do arquivo, uma senha para chave
 
-Temos que enviar achave publica para o servidor, para isso:
-  Criamos um diretorio ".ssh" na home do usuário que iremos utlizar 
+Temos que enviar a chave pública para o servidor, para isso:
+  Criamos um diretório ".ssh" na home do usuário que iremos utilizar 
   no servidor e criar um arquivo chamado "authorized_keys"que conterá
-  a chave publica do cliente ssh com permissão 600 alterando o dono 
-  para o usuario que iremos utilizar fazendo chowh <usuario>:<usuario>
+  a chave pública do cliente ssh com permissão 600 alterando o dono 
+  para o usuário que iremos utilizar fazendo chown <usuario>:<usuario>
   
   Para se conectar utiliznado chaves sem senha basta digitar:
     'ssh <usuario>@<IP-host-remoto>'
   
   Para se conectar utilizando chaves com senha temos que:
     'ssh-add' para a primeira conexão e digitar a senha para a chave
-      -D limpa as senhas digitas
+      -D limpa as senhas digitadas
     'ssh <usuario>@<IP-host-remoto>'
+110.3 Protegendo dados com Encriptação=================================
+== Ciphers=============================================================
+
+Para criar as chaves são suportados os algortimos DSA, ECDSA, ED25519
+  e RSA
 
 
-246. 110.3 Protegendo daddos com Encriptação===========================
+246. 110.3 Protegendo dados com Encriptação============================
 == Tunel SSH e SCP=====================================================
 
 Para criarmos um tunel SSH fazemos no cliente
@@ -279,20 +295,20 @@ Para criarmos um tunel SSH fazemos no cliente
   <usuario>@<IP-do-servidor>'
     -N para não executar nenhum comando
     -f para executar no fundo
-    -L para especificar a porta do cliente, ip e porta do servidor
+    -L para especificar a porta do cliente, IP e porta do servidor
   
   A partir disso já temos um tunel ssh aberto
   Podemos por exemplo conectar via telnel usando o tunel aberto
   'telnet localhost 2323'
 
-Executar alguma aplicação gráfica do servidor na maquina cliente
+Executar alguma aplicação gráfica do servidor na máquina cliente
 Ex:
-  'ssh -X <usuario>@<IP-do-servidor> "nome-da-aplicacao"
-    -X para encaminhamento da interface grafica X11 do gnome
+  'ssh -X <usuario>@<IP-do-servidor> "nome-da-aplicacao"'
+    -X para encaminhamento da interface grafica X11 do Gnome
 
 Exceutar uma series de comandos remotamente em um servidor
 Ex:
-  'ssh <usuario>@<IP-do-servidor> "comando ; comando"
+  'ssh <usuario>@<IP-do-servidor> "comando ; comando"'
 
 O SCP permite enviar e receber arquivos via ssh
 Para enviar:
@@ -306,7 +322,7 @@ Para receber:
     scp paulo@10.199.1.2:/var /home/paulo/documentos
 
 
-247. 110.3 Protegendo daddos com Encriptação===========================
+247. 110.3 Protegendo dados com Encriptação============================
 == GPG=================================================================
 
 GPG - GNU PRIVACY GUARD
@@ -328,18 +344,24 @@ Exportando a chave publica:
     usando a opção --armor ele exportará no formato ASCII
     
     usamos --keyserver <servidor> --send-keys <ID-da-chave>
-    para enviar o envio da chave publica
+    para enviar o envio da chave pública
 
     usamos --keyserver <servidor> --gen-revoke <ID-da-chave>
     para revogar a chave enviada para o servidor de chaves
 
-Importando uma chavee publica:
+Importando uma chave pública:
   'gpg --import <nome-do-arquivo>' usando arquivo
-  'gpg --keyserver <servidor> --recv-keys <ID-da-chave>'
+  'gpg --keyserver <servidor> --receive-keys <ID-da-chave>'
 
+As chaves podem ser identificadas por:
+  Fingerprint Completo: o ID todo com os 40 caracteres
+  ID de chave longo: composto pelos últimos 16 caracteres 
+    da chave
+  ID de chave curta: composto pelos últimos 8 caracteres
+    da chave
 
 Criptografando um arquivo:
-  'gpg --recipient "<quem-vai-receber-a-mensagem> 
+  'gpg --recipient "<quem-vai-receber-a-mensagem>" 
   --output arquivo-criptografado.gpg
   --encrypt arquivo-a-ser-criptografado.out'
 
@@ -353,10 +375,17 @@ Assinando um arquivo:
 Verificando um arquivo assinado:
   'gpg --verify <nome-do-arquivo>.gpg'
 
-249. 110.3 Protegendo daddos com Encriptação===========================
+249. 110.3 Protegendo dados com Encriptação============================
 == gpg-agent===========================================================
 
 O gpg-agent é o deamon do gpg que armazena as chaves privadas em 
   memória
 
+Podemos encerrar o processo do gpg-agent com o comando
+  'gpgconf --kill gpg-agent'
+
 A variavel de ambiente GPG_AGENT_INFO indica um arquivo de socket
+  que é usando para a comunição do entre as aplicações que precisam
+  lidar com a nossa chave
+
+
