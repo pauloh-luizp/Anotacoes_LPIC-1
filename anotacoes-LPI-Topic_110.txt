@@ -279,6 +279,8 @@ Temos que enviar a chave pública para o servidor, para isso:
     'ssh-add' para a primeira conexão e digitar a senha para a chave
       -D limpa as senhas digitadas
     'ssh <usuario>@<IP-host-remoto>'
+
+
 110.3 Protegendo dados com Encriptação=================================
 == Ciphers=============================================================
 
