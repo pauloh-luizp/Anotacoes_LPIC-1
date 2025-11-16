@@ -29,6 +29,7 @@ Podemos criar um alias para comandos fazendo:
 
 Podemos editar o usando o comando 'visudo'
 
+
 232. 110.1 Realizar tarefas de Segurança do Sistema====================
 == who, w, last, lastb, lastlog========================================
 
@@ -148,6 +149,7 @@ O comando 'fuser' permite buscar qual processo está a utilizar
 Ex:
   fuser -u 25/tcp
 
+
 237. 110.2 Configurar Seguranca do Host================================
 == shadow, nologin e como desabilitar serviços=========================
 
@@ -216,6 +218,7 @@ Ao ativarmos um socket com 'systemctl start <servico>.socket' o systemd
   quem passa a ouvir as conexões, mas as conexões quando estabelecidas
   serão estabelecidas pelo proprio serviço
 
+
 243. 110.3 Protegendo dados com Encriptação============================
 == Conceitos de criptografia e SSH=====================================
 
@@ -268,11 +271,11 @@ Temos que gerar as chaves do ssh fazendo:
 
 Temos que enviar a chave pública para o servidor, para isso:
   Criamos um diretório ".ssh" na home do usuário que iremos utilizar 
-  no servidor e criar um arquivo chamado "authorized_keys"que conterá
+  no servidor e criar um arquivo chamado "authorized_keys" que conterá
   a chave pública do cliente ssh com permissão 600 alterando o dono 
   para o usuário que iremos utilizar fazendo chown <usuario>:<usuario>
   
-  Para se conectar utiliznado chaves sem senha basta digitar:
+  Para se conectar utilizando chaves sem senha basta digitar:
     'ssh <usuario>@<IP-host-remoto>'
   
   Para se conectar utilizando chaves com senha temos que:
@@ -376,6 +379,7 @@ Assinando um arquivo:
 
 Verificando um arquivo assinado:
   'gpg --verify <nome-do-arquivo>.gpg'
+
 
 249. 110.3 Protegendo dados com Encriptação============================
 == gpg-agent===========================================================
